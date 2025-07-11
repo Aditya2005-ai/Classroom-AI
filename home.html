@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html lang="en" class="bg-[#0f172a] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classroom.AI – Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+      .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    }
+
+
+    .sidebar-icon {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 0.5rem;
+      transition: 0.3s;
+    }
+    
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+
+
+    .sidebar-icon:hover {
+      background-color: #334155;
+    }
+
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+    }
+
+    .card:hover {
+      border-color: #3b82f6;
+    }
+    #chevronIcon {
+      transition: transform 0.3s ease;
+    }
+
+  </style>
+</head>
+<body class="flex min-h-screen">
+
+      <!-- Sidebar -->
+    <aside class="w-[240px] bg-[#1e293b] p-5 border-r border-gray-700 flex flex-col justify-between">
+      <div>
+        <!-- Logo -->
+      <div class="flex items-center gap-2 mb-6">
+      <img src="logo.png" alt="Logo" class="w-8 h-8 object-contain" />
+      <h1 class="text-2xl font-bold text-blue-400">Classroom.AI</h1>
+      </div>
+
+    <!-- Menu Items -->
+    <nav class="space-y-2 text-sm font-medium">
+      <!-- Home with Submenu -->
+      <div class="space-y-1">
+        <button onclick="toggleHomeSubMenu()" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+          <span class="flex items-center gap-3">🏠 <span>Home</span></span>
+          <svg id="homeChevron" class="w-4 h-4 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="homeSubMenu" class="ml-6 mt-1 space-y-1 hidden text-sm">
+          <a onclick="smoothNavigate('dashboard.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">📊 Dashboard</a>
+        </div>
+      </div>
+
+
+      <!-- Text Tools Collapsible Menu -->
+      <div class="space-y-1">
+        <button onclick="toggleSubMenu()" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+          <span class="flex items-center gap-3">✍️ <span>Text Tools</span></span>
+          <svg id="chevronIcon" class="w-4 h-4 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        <div id="textToolsSubMenu" class="ml-6 mt-1 space-y-1 hidden text-sm">
+          <a onclick="smoothNavigate('questioning.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Question Answering</a>
+          <a onclick="smoothNavigate('summarizer.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Summarizer</a>
+          <a onclick="smoothNavigate('notes.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Notes Generator</a>
+          <a onclick="smoothNavigate('paraphraser.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Paraphraser</a>
+          <a onclick="smoothNavigate('grammer_checker.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Grammar Checker</a>
+          <a onclick="smoothNavigate('essay_writer.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Essay Writer</a>
+        </div>
+      </div>
+
+      <!-- Visual Tools Collapsible Menu -->
+      <div class="space-y-1">
+        <button onclick="toggleVisualSubMenu()" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+          <span class="flex items-center gap-3">🖼️ <span>Visual Tools</span></span>
+          <svg id="visualChevron" class="w-4 h-4 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="visualToolsSubMenu" class="ml-6 mt-1 space-y-1 hidden text-sm">
+          <a onclick="smoothNavigate('image_preview.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Image Preview</a>
+          
+        </div>
+      </div>
+
+
+      <!-- Voice Tools Collapsible Menu -->
+      <div class="space-y-1">
+        <button onclick="toggleVoiceSubMenu()" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+          <span class="flex items-center gap-3">🎤 <span>Voice Tools</span></span>
+          <svg id="voiceChevron" class="w-4 h-4 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="voiceToolsSubMenu" class="ml-6 mt-1 space-y-1 hidden text-sm">
+          <a onclick="smoothNavigate('speech_to_text.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Speech to Text</a>
+          
+        </div>
+      </div>
+
+
+      <!-- Coding Tools Collapsible Menu -->
+      <div class="space-y-1">
+        <button onclick="toggleCodeSubMenu()" class="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+          <span class="flex items-center gap-3">👨‍💻 <span>Coding Tools</span></span>
+          <svg id="codeChevron" class="w-4 h-4 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div id="codeToolsSubMenu" class="ml-6 mt-1 space-y-1 hidden text-sm">
+          <a onclick="smoothNavigate('code_generator.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Code Generator</a>
+          <a onclick="smoothNavigate('code_explainer.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Code Explainer</a>
+          <a onclick="smoothNavigate('code_debugger.html')" class="block px-3 py-1 rounded hover:bg-blue-600 cursor-pointer">Code Debugger</a>
+        </div>
+      </div>
+
+
+      <button onclick="location.href='settings.html'" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-700 transition">
+        ⚙️ <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Footer note -->
+  <div class="text-xs text-gray-400 mt-8">
+    Built with 💡 for learning. <br />
+    © 2025 Classroom.AI
+  </div>
+</aside>
+
+
+  <!-- Main Section -->
+  <section class="flex-1 flex flex-col">
+
+    <!-- Top Bar -->
+    <header class="h-[60px] px-6 flex items-center justify-end border-b border-gray-700 bg-[#0f172a]">
+      <div class="relative flex items-center gap-4">
+        <span id="authText" class="text-sm text-gray-300 hover:text-white cursor-pointer" onclick="openModal()">Sign In / Sign Up</span>
+
+        <img src="user.png" id="profileAvatar" class="w-10 h-10 rounded-full object-cover cursor-pointer" onclick="toggleDropdown()" />
+        
+        <!-- Dropdown -->
+        <div id="dropdownMenu" class="absolute top-14 right-0 bg-[#1e293b] border border-gray-600 rounded-lg shadow-lg p-4 w-64 hidden z-50">
+          <div class="flex items-center justify-between mb-4">
+            <!-- Left: Avatar + Info -->
+            <div class="flex items-center gap-3">
+              <img id="dropdownAvatar" src="user.png" class="w-10 h-10 rounded-full object-cover" />
+              <div>
+                <p class="text-sm text-white font-semibold"></p>
+                <p class="text-xs text-gray-400">Student</p>
+              </div>
+            </div>
+
+            <!-- Right: Edit -->
+            <button onclick="window.location.href='dashboard.html'"
+              class="text-blue-400 text-sm hover:underline ml-2">Edit</button>
+          </div>
+
+          <!-- Logout button -->
+          <button onclick="logoutUser()"
+            class="w-full mt-2 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-md transition">
+            Logout
+          </button>
+        </div>
+
+
+
+    </header>
+
+    <!-- Center Body -->
+    <main class="flex-1 px-6 py-12 flex flex-col items-center text-center">
+      <h2 class="text-4xl font-bold mb-4 text-blue-400">Welcome to Classroom.AI</h2>
+      <p class="text-gray-300 max-w-xl mb-8">Your all-in-one creative suite for classroom tasks: Generate notes, visuals, audio, and code using AI tools.</p>
+
+      <!-- Prompt Input -->
+      <div class="w-full max-w-2xl flex items-center bg-[#1e293b] border border-gray-600 rounded-full px-5 py-3 shadow-md">
+        <input type="text" id="promptInput"
+  placeholder=""
+  class="bg-transparent w-full text-white placeholder-gray-400 focus:outline-none" />
+
+        <button class="ml-3 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full text-white font-semibold">➤</button>
+      </div>
+
+      <!-- Cards Section -->
+      <div class="mt-14 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl w-full">
+        <a href="notes.html" class="card rounded-xl p-4 hover:shadow-lg cursor-pointer block transition duration-200">
+        <h3 class="font-semibold text-lg mb-2">📄 AI Notes Generator</h3>
+        <p class="text-gray-400 text-sm">Generate lecture-ready notes using AI. Fast, reliable, and customizable.</p>
+        </a>
+
+        <a href="image_preview.html" class="card rounded-xl p-4 hover:shadow-lg cursor-pointer block transition duration-200">
+        <h3 class="font-semibold text-lg mb-2">🎨 Image Preview</h3>
+        <p class="text-gray-400 text-sm">Examines your images to give you desired result using AI.</p>
+        </a>
+
+        <a href="speech_to_text.html" class="card rounded-xl p-4 hover:shadow-lg cursor-pointer block transition duration-200">
+        <h3 class="font-semibold text-lg mb-2">🎤 Voice Assistant</h3>
+        <p class="text-gray-400 text-sm">Converts your speeches into text, and more. AI-powered voice assistant.</p>
+        </a>
+
+        <a href="code_explainer.html" class="card rounded-xl p-4 hover:shadow-lg cursor-pointer block transition duration-200">
+          <h3 class="font-semibold text-lg mb-2">👨‍💻 Coding Assistant</h3>
+          <p class="text-gray-400 text-sm">Generate working code snippets and debug logic using code AI.</p>
+        </a>
+
+      </div>
+    </main>
+  </section>
+      <!-- Sign In/Up Modal -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden items-center justify-center">
+      <div class="bg-[#1e293b] text-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+        <button onclick="closeModal()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+        <h2 class="text-2xl font-bold text-blue-400 mb-4 text-center">Sign In / Sign Up</h2>
+
+          <form class="space-y-4">
+          <input type="text" placeholder="name" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-600 rounded-md focus:outline-none" />
+          <input type="email" placeholder="email" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-600 rounded-md focus:outline-none" />
+          <input type="password" placeholder="password" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-600 rounded-md focus:outline-none" />
+
+          <!-- "Already have an account?" Text -->
+          <p class="text-sm text-gray-400">
+            Already have an account?
+            <span class="text-blue-400 hover:underline cursor-pointer" onclick="switchToLogin()">Login</span>
+          </p>
+
+          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-semibold">Sign Up</button>
+        </form>
+
+
+        <div class="my-4 flex items-center justify-between text-gray-400 text-sm">
+          <hr class="flex-1 border-gray-600" />
+          <span class="px-2">or</span>
+          <hr class="flex-1 border-gray-600" />
+        </div>
+
+       <button onclick="googleSignIn()" class="w-full flex items-center justify-center gap-2 py-2 border border-gray-600 rounded-md hover:bg-[#334155] transition">
+          <img src="google-logo-png.png" class="w-5 h-5" alt="Google logo" />
+          <span>Continue with Google</span>
+        </button>
+
+
+      </div>
+    </div>
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden items-center justify-center">
+      <div class="bg-[#1e293b] text-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+        <button onclick="closeLogin()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+        <h2 class="text-2xl font-bold text-blue-400 mb-4 text-center">Login</h2>
+
+        <form class="space-y-4">
+          <input type="email" placeholder="Email" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-600 rounded-md focus:outline-none" />
+          <input type="password" placeholder="Password" class="w-full px-4 py-2 bg-[#0f172a] border border-gray-600 rounded-md focus:outline-none" />
+
+          <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-semibold">Login</button>
+        </form>
+         <div class="my-4 flex items-center justify-between text-gray-400 text-sm">
+          <hr class="flex-1 border-gray-600" />
+          <span class="px-2">or</span>
+          <hr class="flex-1 border-gray-600" />
+        </div>
+
+        <button onclick="googleSignIn()" class="w-full flex items-center justify-center gap-2 py-2 border border-gray-600 rounded-md hover:bg-[#334155] transition">
+        <img src="google-logo-png.png" class="w-5 h-5" alt="Google logo">
+        <span>Continue with Google</span>
+        </button>
+
+      </div>
+      </div>
+    </div>
+
+</body>
+</html>
+<!-- Firebase SDKs (Always required) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+
+<script type="module" src="auth.js"></script>
+
+<script>
+  function smoothNavigate(url) {
+  document.body.classList.add("fade-out");
+  setTimeout(() => {
+    window.location.href = url;
+  }, 500); // match with your CSS transition
+  }
+  function toggleCodeSubMenu() {
+  const submenu = document.getElementById("codeToolsSubMenu");
+  const chevron = document.getElementById("codeChevron");
+  submenu.classList.toggle("hidden");
+  chevron.classList.toggle("rotate-180");
+  }
+
+  function toggleHomeSubMenu() {
+  const submenu = document.getElementById("homeSubMenu");
+  const chevron = document.getElementById("homeChevron");
+  submenu.classList.toggle("hidden");
+  chevron.classList.toggle("rotate-180");
+  }
+
+  function toggleVoiceSubMenu() {
+  const submenu = document.getElementById("voiceToolsSubMenu");
+  const chevron = document.getElementById("voiceChevron");
+  submenu.classList.toggle("hidden");
+  chevron.classList.toggle("rotate-180");
+  }
+
+  function toggleVisualSubMenu() {
+  const submenu = document.getElementById("visualToolsSubMenu");
+  const chevron = document.getElementById("visualChevron");
+  submenu.classList.toggle("hidden");
+  chevron.classList.toggle("rotate-180");
+  }
+
+  function toggleSubMenu() {
+  const submenu = document.getElementById("textToolsSubMenu");
+  const chevron = document.getElementById("chevronIcon");
+  submenu.classList.toggle("hidden");
+  chevron.classList.toggle("rotate-180");
+  }
+
+  // Typing Placeholder Animation
+  const placeholders = [
+    "Generate Python code for a calculator...",
+    "Summarize this paragraph using AI...",
+    "Create notes from a biology chapter...",
+    "Explain Newton's Laws in simple terms...",
+    "Convert voice into lecture notes..."
+  ];
+
+  let currentIndex = 0;
+  const input = document.getElementById("promptInput");
+
+  function typePlaceholder(text, callback) {
+    let i = 0;
+    input.placeholder = "";
+
+    const typer = setInterval(() => {
+      input.placeholder += text.charAt(i);
+      i++;
+      if (i >= text.length) {
+        clearInterval(typer);
+        setTimeout(callback, 2000);
+      }
+    }, 50);
+  }
+
+  function cyclePlaceholders() {
+    typePlaceholder(placeholders[currentIndex], () => {
+      currentIndex = (currentIndex + 1) % placeholders.length;
+      cyclePlaceholders();
+    });
+  }
+
+  cyclePlaceholders();
+
+  // Smooth transition on click
+  document.addEventListener("DOMContentLoaded", () => {
+    input.addEventListener("focus", () => {
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = "questioning.html";
+      }, 600); // same as transition duration
+    });
+  });
+  
+</script>
+<script>
+  function openModal() {
+    document.getElementById("authModal").classList.remove("hidden");
+    document.getElementById("authModal").classList.add("flex");
+  }
+
+  function closeModal() {
+    document.getElementById("authModal").classList.add("hidden");
+    document.getElementById("authModal").classList.remove("flex");
+  }
+  
+
+  function switchToLogin() {
+    closeModal();
+    openLogin();
+  }
+
+  function openLogin() {
+    document.getElementById("loginModal").classList.remove("hidden");
+    document.getElementById("loginModal").classList.add("flex");
+  }
+
+  function closeLogin() {
+    document.getElementById("loginModal").classList.add("hidden");
+    document.getElementById("loginModal").classList.remove("flex");
+  }
+  
+  
+  
+  
+  let isLoggedIn = false; // Simulate login state
+
+    document.addEventListener("DOMContentLoaded", () => {
+    // 🔹 Sign Up Form Submit
+    const signupForm = document.querySelector("#authModal form");
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = signupForm.querySelector('input[placeholder="name"]').value;
+      const email = signupForm.querySelector('input[placeholder="email"]').value;
+      const password = signupForm.querySelector('input[placeholder="password"]').value;
+      signUpWithEmail(name, email, password); // from auth.js
+    });
+
+    // 🔹 Login Form Submit
+    const loginForm = document.querySelector("#loginModal form");
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = loginForm.querySelector('input[placeholder="Email"]').value;
+      const password = loginForm.querySelector('input[placeholder="Password"]').value;
+      loginWithEmail(email, password); // from auth.js
+    });
+
+    // 🔹 Close dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+      const dropdown = document.getElementById("dropdownMenu");
+      const avatar = document.getElementById("profileAvatar");
+      if (!dropdown.contains(e.target) && e.target !== avatar) {
+        dropdown.classList.add("hidden");
+      }
+    });
+  });
+
+    function toggleDropdown() {
+      const menu = document.getElementById("dropdownMenu");
+      menu.classList.toggle("hidden");
+    }
+
+    function updateAvatar(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        document.getElementById("profileAvatar").src = url;
+        document.getElementById("dropdownAvatar").src = url;
+      }
+    }
+
+    // When form is submitted, simulate login and hide authText
+    document.addEventListener("DOMContentLoaded", () => {
+      const signupForms = document.querySelectorAll("form");
+      signupForms.forEach(form => {
+        form.addEventListener("submit", e => {
+          e.preventDefault(); // Prevent real submit
+          closeModal();
+          closeLogin();
+          fakeLogin();
+        });
+      });
+
+      // Click outside dropdown to close
+      document.addEventListener("click", function (e) {
+        const dropdown = document.getElementById("dropdownMenu");
+        const avatar = document.getElementById("profileAvatar");
+        if (!dropdown.contains(e.target) && e.target !== avatar) {
+          dropdown.classList.add("hidden");
+        }
+      });
+    });
+
+</script>
+<script type="module">
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { app } from "./auth.js"; // 🔁 ya firebase-config.js depending on your setup
+
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    const authText = document.getElementById("authText");
+    const profileAvatar = document.getElementById("profileAvatar");
+    const dropdownAvatar = document.getElementById("dropdownAvatar");
+
+    if (user) {
+      authText.style.display = "none";
+      profileAvatar.src = user.photoURL || "user.png";
+      dropdownAvatar.src = user.photoURL || "user.png";
+      document.querySelector("#dropdownMenu p.text-sm").textContent = user.displayName || "User";
+    } else {
+      authText.style.display = "inline-block";
+    }
+  
+  });
+  
+</script>
+
+
+
+
+
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0f172a] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Debugger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 min-h-screen">
+  <!-- Logo + Title -->
+  <div class="flex items-center gap-4 mb-6">
+    <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+    <h1 class="text-3xl font-bold text-blue-400">Code Debugger</h1>
+  </div>
+
+  <!-- Full Height Container -->
+  <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-100px)]">
+
+    <!-- Input -->
+    <div class="bg-transparent p-4 rounded-xl flex flex-col h-full">
+      <h2 class="text-xl font-semibold mb-2">Paste buggy code</h2>
+      <textarea id="instructionInput" placeholder="Paste your code here..."
+        class="flex-1 w-full bg-black p-3 rounded-lg focus:outline-none resize-none mb-4"></textarea>
+      <button onclick="generateCode()"
+        class="w-full bg-gradient-to-r from-blue-500 to-purple-600 py-2 rounded-lg font-semibold">Run</button>
+    </div>
+
+    <!-- Output -->
+    <div class="bg-[#0f172a] p-4 rounded-xl flex flex-col h-full">
+      <h2 class="text-xl font-semibold mb-2">Fixed Code</h2>
+      <pre id="codeOutput" 
+        class="flex-1 p-3 rounded-lg overflow-auto text-green-300 bg-black">Debugged output will appear here...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function generateCode() {
+      const input = document.getElementById("instructionInput").value.trim();
+      const output = document.getElementById("codeOutput");
+
+      if (!input) {
+        output.innerText = "⚠️ Please paste buggy code to debug.";
+        return;
+      }
+
+      output.innerText = "⏳ Debugging your code...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/debug", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: input })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.fixed_code) {
+          output.innerText = data.fixed_code;
+        } else {
+          output.innerText = "❌ Error: " + (data.error || "Unable to debug the code.");
+        }
+      } catch (error) {
+        output.innerText = "❌ Failed to connect to AI server: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#0f172a] text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Classroom AI-Code Explainer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6 min-h-screen">
+  <!-- Logo + Title -->
+  <div class="flex items-center gap-4 mb-6">
+    <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+    <h1 class="text-3xl font-bold text-blue-400">Code Explainer</h1>
+  </div>
+
+  <!-- Full Height Container -->
+  <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-100px)]">
+    
+    <!-- Input Box -->
+    <div class="bg-transparent p-4 rounded-xl flex flex-col h-full">
+      <h2 class="text-xl font-semibold mb-2">Paste your code</h2>
+      <textarea id="codeInput" placeholder="Paste your code here..."
+        class="flex-1 bg-black p-3 rounded-lg focus:outline-none resize-none mb-4"></textarea>
+      <button onclick="explainCode()"
+        class="w-full bg-gradient-to-r from-blue-500 to-purple-600 py-2 rounded-lg font-semibold">Explain</button>
+    </div>
+
+    <!-- Output Box -->
+    <div class="bg-transparent p-4 rounded-xl flex flex-col h-full">
+      <h2 class="text-xl font-semibold mb-2">Explanation</h2>
+      <pre id="explanationOutput"
+        class="flex-1 bg-black p-3 rounded-lg overflow-auto text-gray-200">Your explanation will appear here...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function explainCode() {
+      const code = document.getElementById("codeInput").value.trim();
+      const output = document.getElementById("explanationOutput");
+
+      if (!code) {
+        output.innerText = "⚠️ Please paste your code to get explanation.";
+        return;
+      }
+
+      output.innerText = "⏳ Explaining your code...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/explain", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: code })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.summary) {
+          output.innerText = data.summary;
+        } else {
+          output.innerText = "❌ Error: " + (data.error || "Unable to explain the code.");
+        }
+      } catch (err) {
+        output.innerText = "❌ Failed to connect to AI server: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

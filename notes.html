@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes Generator - Classroom.AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      padding: 2rem;
+      gap: 2rem;
+    }
+    textarea {
+      background: #1e293b;
+      border: none;
+      color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      width: 100%;
+      height: 100%;
+      resize: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #1e293b;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 90%;
+      max-width: 500px;
+    }
+    .btn {
+      background: linear-gradient(to right, #3b82f6, #a855f7);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="p-4">
+    <img src="logo.png" alt="Logo" class="w-10">
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Input -->
+    <div class="flex-1 flex flex-col">
+      <h2 class="text-xl font-bold mb-2">📝 Topic / Lecture Text</h2>
+      <textarea id="inputNotes" placeholder="Paste topic or lecture here..."></textarea>
+      <button class="btn mt-4" onclick="generateNotes()">Generate Notes</button>
+    </div>
+
+    <!-- Output -->
+    <div class="flex-1 flex flex-col">
+      <h2 class="text-xl font-bold mb-2">📄 Generated Notes</h2>
+      <textarea id="outputNotes" readonly placeholder="Your notes will appear here..."></textarea>
+      <button class="btn mt-4" onclick="showModal()">Save Notes</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="saveModal" class="modal">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4">Save Notes</h2>
+      <input type="text" id="noteTitle" placeholder="Enter note title..." class="w-full p-2 mb-4 rounded bg-gray-800 text-white" />
+
+      <div class="grid grid-cols-2 gap-4">
+        <button class="btn" onclick="saveNote()">💾 Save</button>
+        <button class="btn" onclick="downloadNote()">⬇️ Download</button>
+        <button class="btn" onclick="copyNoteText()">📋 Copy</button>
+        <button class="btn" onclick="copyNoteLink()">🔗 Copy Link</button>
+      </div>
+
+      <button class="mt-6 text-red-400 underline" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    async function generateNotes() {
+      const input = document.getElementById('inputNotes').value.trim();
+      const outputField = document.getElementById('outputNotes');
+
+      if (input === "") {
+        alert("Please enter something!");
+        return;
+      }
+
+      outputField.value = "🤔 Generating notes...";
+
+      const prompt = `
+    You are a classroom note-taking assistant. Convert the following lecture or topic into clear, concise, and well-structured bullet point notes. Include:
+
+    - Definitions where needed
+    - Key facts and concepts
+    - Important terms highlighted
+    - Use simple language suitable for students
+
+    Format the output as clean bullet points.
+
+    Text:
+    """${input}"""
+    `;
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/gemini", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+        typeTextEffect(outputField, data.response);
+
+        } else {
+          outputField.value = `❌ Error: ${data.error}`;
+        }
+      } catch (error) {
+        outputField.value = `❌ Error connecting to AI: ${error.message}`;
+      }
+    }
+
+    function showModal() {
+      document.getElementById('saveModal').style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById('saveModal').style.display = "none";
+    }
+
+    function saveNote() {
+      const title = document.getElementById("noteTitle").value.trim();
+      const content = document.getElementById("outputNotes").value.trim();
+      if (!title || !content) return alert("Please enter title and content!");
+
+      let saved = JSON.parse(localStorage.getItem("notes") || "[]");
+      saved.push({ title, content, date: new Date().toLocaleString() });
+      localStorage.setItem("notes", JSON.stringify(saved));
+
+      alert("✅ Note saved!");
+      closeModal();
+    }
+
+    function downloadNote() {
+      const title = document.getElementById("noteTitle").value.trim() || "MyNote";
+      const content = document.getElementById("outputNotes").value.trim();
+      const blob = new Blob([content], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.download = title + ".txt";
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    }
+
+    function copyNoteText() {
+      const text = document.getElementById("outputNotes").value;
+      navigator.clipboard.writeText(text);
+      alert("📋 Notes copied!");
+    }
+
+    function copyNoteLink() {
+      const dummyURL = "https://classroom.ai/notes/view?id=123456"; // Placeholder
+      navigator.clipboard.writeText(dummyURL);
+      alert("🔗 Link copied (stub)");
+    }
+
+    async function fetchAIResponse(prompt) {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/ai-response', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt }),
+        });
+
+        const data = await response.json();
+        if (data.response) {
+          document.getElementById('aiOutput').innerText = `AI Response: ${data.response}`;
+        } else {
+          document.getElementById('aiOutput').innerText = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        document.getElementById('aiOutput').innerText = `Error: ${error.message}`;
+      }
+    }
+
+    function handleTool(toolName) {
+      const prompt = `Use AI to assist with ${toolName}. Provide a detailed response.`;
+      fetchAIResponse(prompt);
+    }
+    function typeTextEffect(element, text, speed = 20) {
+  element.value = "";
+  let index = 0;
+
+  function typeChar() {
+    if (index < text.length) {
+      element.value += text.charAt(index);
+      element.scrollTop = element.scrollHeight; // 👈 this scrolls automatically
+      index++;
+      setTimeout(typeChar, speed);
+    }
+  }
+
+  typeChar();
+  }
+</script>
+
+  <div>
+    <h1>Notes Generator</h1>
+    <button onclick="handleTool('Notes Generator')">Generate Notes</button>
+    <p id="aiOutput"></p>
+  </div>
+
+</body>
+</html>
+
+<!-- <script>
+async function sendToGemini(promptText, callback) {
+  const response = await fetch("http://127.0.0.1:5000/gemini", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: promptText })
+  });
+
+  const data = await response.json();
+
+  if (data.response) {
+    callback(data.response); // Send response back to the calling function
+  } else {
+    callback("❌ Error from Gemini: " + data.error);
+  }
+}
+</script> -->
+

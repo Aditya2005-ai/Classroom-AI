@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Summarizer - Classroom.AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      background: #0f172a;
+      font-family: 'Inter', sans-serif;
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out;
+    }
+  </style>
+
+  <!-- Firebase Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyXXXXXXX",
+      authDomain: "your-project-id.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      currentUser = user;
+
+      const folderSelect = document.getElementById("folderSelect");
+      folderSelect.innerHTML = `<option value="">-- Select Folder --</option>`;
+
+      try {
+        const snapshot = await getDocs(query(collection(db, "projects"), where("uid", "==", user.uid)));
+        snapshot.forEach(doc => {
+          const option = document.createElement("option");
+          option.value = doc.id;
+          option.textContent = doc.data().name;
+          folderSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("❌ Error loading folders:", err);
+      }
+    });
+
+    window.submitText = async function () {
+      const input = document.getElementById("textInput").value.trim();
+      const outputBox = document.getElementById("outputBox");
+      if (!input) return outputBox.innerText = "Please enter some text to summarize.";
+
+      outputBox.innerText = "⏳ Summarizing...";
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/summarize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: input })
+        });
+        const data = await response.json();
+        if (response.ok && data.summary) typeWriterEffect(data.summary, outputBox);
+        else outputBox.innerText = "❌ Error: " + (data.error || "Unable to summarize the text.");
+      } catch (err) {
+        outputBox.innerText = "❌ Failed to connect to AI server: " + err.message;
+      }
+    };
+
+    function typeWriterEffect(text, element, speed = 20) {
+      element.textContent = "";
+      let index = 0;
+      document.getElementById("saveBtn").classList.add("hidden");
+
+      function type() {
+        if (index < text.length) {
+          element.textContent += text.charAt(index);
+          index++;
+          setTimeout(type, speed);
+        } else {
+          document.getElementById("saveBtn").classList.remove("hidden");
+        }
+      }
+      type();
+    }
+
+    window.openSaveModal = function () {
+      document.getElementById("saveModal").classList.remove("hidden");
+      document.getElementById("saveModal").classList.add("flex");
+    };
+
+    window.closeSaveModal = function () {
+      document.getElementById("saveModal").classList.add("hidden");
+      document.getElementById("saveModal").classList.remove("flex");
+    };
+
+    window.saveSummaryToDashboard = async function () {
+      const fileName = document.getElementById("filenameInput").value.trim();
+      const folderId = document.getElementById("folderSelect").value;
+      const summaryText = document.getElementById("outputBox").innerText.trim();
+
+      if (!fileName || !folderId || !summaryText) return alert("⚠️ Please fill all fields and generate a summary first.");
+      if (!currentUser) return alert("⚠️ You must be signed in to save.");
+
+      try {
+        await addDoc(collection(db, `projects/${folderId}/files`), {
+          title: fileName,
+          content: summaryText,
+          createdAt: new Date(),
+          uid: currentUser.uid
+        });
+        alert("✅ Summary saved to your dashboard!");
+        closeSaveModal();
+        document.getElementById("filenameInput").value = "";
+        document.getElementById("folderSelect").value = "";
+      } catch (err) {
+        console.error("❌ Error saving summary:", err);
+        alert("Error saving summary.");
+      }
+    };
+  </script>
+</head>
+<body class="text-white">
+  <div class="fixed top-0 left-0 p-4 flex items-center gap-4">
+    <img src="logo.png" alt="Logo" class="w-12 h-auto"/>
+    <h1 class="text-3xl font-extrabold text-blue-400">Summarizer</h1>
+  </div>
+  <div class="flex h-screen pt-16 px-6 gap-6">
+    <div class="w-1/2 bg-transparent rounded-xl p-6 shadow-none flex flex-col">
+      <h2 class="text-2xl font-semibold mb-4">Enter your text</h2>
+      <textarea id="textInput" rows="12" placeholder="Paste or type text here..." class="bg-black w-full h-full text-white p-4 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      <button onclick="submitText()" class="mt-4 bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-6 rounded-lg font-semibold hover:scale-105 transition">Summarize</button>
+    </div>
+    <div class="w-1/2 bg-transparent rounded-xl p-6 shadow-none flex flex-col">
+      <h2 class="text-2xl font-semibold mb-4">Summary</h2>
+      <div id="outputBox" class="bg-black p-4 rounded-lg h-full overflow-y-auto whitespace-pre-wrap break-words">
+        Your summary will appear here...
+      </div>
+      <button id="saveBtn" onclick="openSaveModal()" class="hidden mt-4 bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-6 rounded-lg font-semibold hover:scale-105 transition">
+        📅 Save Summary
+      </button>
+      <div id="saveModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="bg-[#1e293b] p-6 rounded-2xl shadow-2xl w-full max-w-md text-white animate-fade-in">
+          <h2 class="text-xl font-bold mb-4">Save Summary to Dashboard</h2>
+          <label class="text-sm mb-1 block">File Name</label>
+          <input id="filenameInput" type="text" placeholder="Enter file name..." class="w-full mb-4 p-2 rounded bg-[#0f172a] border border-slate-600 focus:outline-none">
+          <label class="text-sm mb-1 block">Select Folder</label>
+          <select id="folderSelect" class="w-full mb-6 p-2 rounded bg-[#0f172a] border border-slate-600 focus:outline-none">
+            <option value="">-- Select Folder --</option>
+          </select>
+          <div class="flex justify-end gap-3">
+            <button onclick="closeSaveModal()" class="px-4 py-2 rounded bg-slate-600 hover:bg-slate-500 transition">Cancel</button>
+            <button onclick="saveSummaryToDashboard()" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 transition">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
