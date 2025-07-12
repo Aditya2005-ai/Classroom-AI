@@ -74,6 +74,11 @@
     </div>
   </div>
 
+  <!-- Success Message -->
+  <div id="successMessage" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+    ✅ Essay saved successfully!
+  </div>
+
   <!-- ✅ Firebase SDKs -->
   <script type="module">
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -82,7 +87,9 @@
     collection,
     query,
     where,
-    getDocs
+    getDocs,
+    addDoc,
+    serverTimestamp
   } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
   import { app } from "./auth.js"; // 👈 Make sure this points to your Firebase app config
 
@@ -98,12 +105,16 @@
     }
 
     currentUser = user;
+    await loadFolders();
+  });
 
+  // ✅ Load folders function
+  async function loadFolders() {
     const folderSelect = document.getElementById("folderSelect");
     folderSelect.innerHTML = `<option value="">-- Select Folder --</option>`; // Clear previous options
 
     try {
-      const q = query(collection(db, "projects"), where("uid", "==", user.uid));
+      const q = query(collection(db, "projects"), where("uid", "==", currentUser.uid));
       const snapshot = await getDocs(q);
       
       snapshot.forEach(docSnap => {
@@ -117,7 +128,53 @@
     } catch (err) {
       console.error("❌ Error loading folders:", err);
     }
-  });
+  }
+
+  // ✅ Save essay function
+  window.saveEssay = async function() {
+    const fileName = document.getElementById("fileName").value.trim();
+    const selectedFolder = document.getElementById("folderSelect").value;
+    const essayContent = document.getElementById("output").innerText;
+    const essayTopic = document.getElementById("topicInput").value.trim();
+    const errorBox = document.getElementById("errorBox");
+
+    // Validation
+    if (!fileName || !selectedFolder) {
+      errorBox.classList.remove("hidden");
+      return;
+    }
+
+    errorBox.classList.add("hidden");
+
+    try {
+      // Save to Firestore
+      await addDoc(collection(db, `projects/${selectedFolder}/files`), {
+        title: fileName,
+        content: essayContent,
+        topic: essayTopic,
+        tooltype: "essay",
+        uid: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      // Show success message
+      const successMessage = document.getElementById("successMessage");
+      successMessage.classList.remove("hidden");
+      setTimeout(() => {
+        successMessage.classList.add("hidden");
+      }, 3000);
+
+      // Close modal and reset form
+      closeModal();
+      document.getElementById("fileName").value = "";
+      document.getElementById("folderSelect").value = "";
+
+    } catch (error) {
+      console.error("❌ Error saving essay:", error);
+      alert("Error saving essay. Please try again.");
+    }
+  };
 </script>
 
   <!-- Non-module Script -->
@@ -159,68 +216,14 @@
     function closeModal() {
       saveModal.classList.add("hidden");
     }
-  </script>
-  <script type="module">
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs
-  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-  import { app } from "./auth.js";
 
-  
-
-  onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUser = user;
-    const q = query(collection(db, "projects"), where("uid", "==", user.uid));
-    const snap = await getDocs(q);
-    const folderSelect = document.getElementById("folderSelect");
-
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      folderMap[data.name] = docSnap.id;
-      const opt = document.createElement("option");
-      opt.value = docSnap.id;
-      opt.textContent = data.name;
-      folderSelect.appendChild(opt);
+    // Allow Enter key to generate essay
+    topicInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        generateEssay();
+      }
     });
-  }
-});
-
-  window.openFolderById = async function(folderId, folderName) {
-    document.getElementById('folderTitle').textContent = `📁 ${folderName}`;
-    const fileList = document.getElementById('folderFiles');
-    fileList.innerHTML = "";
-
-    const fQ = query(collection(db, `projects/${folderId}/files`), where("uid","==", auth.currentUser.uid));
-    const fSnap = await getDocs(fQ);
-    if (fSnap.empty) {
-      fileList.innerHTML = `<li class="text-gray-400">No files yet.</li>`;
-    } else {
-      fSnap.forEach(d=> {
-        const f = d.data();
-        const li = document.createElement("li");
-        li.className = "bg-[#1e293b] border border-gray-700 px-4 py-2 rounded-md text-sm";
-        li.innerHTML = `<strong>${f.title}</strong><br><span class="text-gray-400 text-xs">${f.content.slice(0,100)}…</span>`;
-        fileList.appendChild(li);
-      });
-    }
-
-    document.getElementById('folderView').classList.remove("hidden");
-    document.getElementById('folderView').classList.add("flex");
-  };
-</script>
-
-<script>
-  function closeFolderView() {
-    document.getElementById('folderView').classList.add("hidden");
-    document.getElementById('folderView').classList.remove("flex");
-  }
-</script>
+  </script>
 
 </body>
 </html>

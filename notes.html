@@ -1,25 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-[#0f172a] text-white">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notes Generator - Classroom.AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Firebase Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_IAWIY058J-VYRZX2U4AE1H2XZQ-6gV4",
+      authDomain: "classroomai-20.firebaseapp.com",
+      projectId: "classroomai-20",
+      storageBucket: "classroomai-20.appspot.com",
+      messagingSenderId: "9778016549",
+      appId: "1:9778016549:web:c8325a2404ef6966012acc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let defaultFolderId = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "home.html";
+      currentUser = user;
+
+      const q = query(collection(db, "projects"), where("uid", "==", user.uid), where("name", "==", "AI Notes"));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        const newFolder = await addDoc(collection(db, "projects"), {
+          uid: user.uid,
+          name: "AI Notes",
+          description: "Auto-generated notes",
+          created: new Date().toISOString()
+        });
+        defaultFolderId = newFolder.id;
+      } else {
+        defaultFolderId = snapshot.docs[0].id;
+      }
+    });
+
+    window.saveNote = async function () {
+      const content = document.getElementById("outputNotes").value.trim();
+      if (!content) return alert("Please generate some notes first!");
+      if (!currentUser || !defaultFolderId) return alert("❌ User not authenticated or folder not ready.");
+
+      const title = `Notes - ${new Date().toLocaleString()}`;
+      
+      try {
+        await addDoc(collection(db, `projects/${defaultFolderId}/files`), {
+          uid: currentUser.uid,
+          title,
+          content,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Easter egg celebration!
+        showEasterEgg();
+        
+      } catch (e) {
+        console.error("Error saving note:", e);
+        alert("❌ Failed to save note.");
+      }
+    };
+  </script>
+
   <style>
-    body {
-      background: #0f172a;
-      color: #f1f5f9;
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    .container {
-      flex: 1;
-      display: flex;
-      padding: 2rem;
-      gap: 2rem;
-    }
     textarea {
       background: #1e293b;
       border: none;
@@ -30,23 +93,6 @@
       height: 100%;
       resize: none;
     }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #1e293b;
-      padding: 2rem;
-      border-radius: 1rem;
-      width: 90%;
-      max-width: 500px;
-    }
     .btn {
       background: linear-gradient(to right, #3b82f6, #a855f7);
       padding: 0.75rem 1.5rem;
@@ -54,10 +100,97 @@
       font-weight: bold;
       color: white;
       cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Easter Egg Styles */
+    .easter-egg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .easter-egg-content {
+      text-align: center;
+      color: white;
+      animation: bounceIn 0.8s ease;
+    }
+    
+    .celebration-text {
+      font-size: 4rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24);
+      background-size: 400% 400%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 2s ease-in-out infinite;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ff6b6b;
+      animation: confettiFall 3s linear infinite;
+    }
+    
+    .confetti:nth-child(2) { background: #4ecdc4; left: 10%; animation-delay: 0.2s; }
+    .confetti:nth-child(3) { background: #45b7d1; left: 20%; animation-delay: 0.4s; }
+    .confetti:nth-child(4) { background: #f9ca24; left: 30%; animation-delay: 0.6s; }
+    .confetti:nth-child(5) { background: #ff6b6b; left: 40%; animation-delay: 0.8s; }
+    .confetti:nth-child(6) { background: #4ecdc4; left: 50%; animation-delay: 1.0s; }
+    .confetti:nth-child(7) { background: #45b7d1; left: 60%; animation-delay: 1.2s; }
+    .confetti:nth-child(8) { background: #f9ca24; left: 70%; animation-delay: 1.4s; }
+    .confetti:nth-child(9) { background: #ff6b6b; left: 80%; animation-delay: 1.6s; }
+    .confetti:nth-child(10) { background: #4ecdc4; left: 90%; animation-delay: 1.8s; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes confettiFall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+    
+    .secret-konami {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.8rem;
+      color: #4b5563;
+      opacity: 0.3;
+      cursor: pointer;
     }
   </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
   <!-- Logo -->
   <div class="p-4">
@@ -65,194 +198,163 @@
   </div>
 
   <!-- Main Container -->
-  <div class="container">
-    <!-- Input -->
+  <div class="flex-1 flex flex-col lg:flex-row gap-4 p-4">
     <div class="flex-1 flex flex-col">
       <h2 class="text-xl font-bold mb-2">📝 Topic / Lecture Text</h2>
       <textarea id="inputNotes" placeholder="Paste topic or lecture here..."></textarea>
       <button class="btn mt-4" onclick="generateNotes()">Generate Notes</button>
     </div>
-
-    <!-- Output -->
     <div class="flex-1 flex flex-col">
       <h2 class="text-xl font-bold mb-2">📄 Generated Notes</h2>
       <textarea id="outputNotes" readonly placeholder="Your notes will appear here..."></textarea>
-      <button class="btn mt-4" onclick="showModal()">Save Notes</button>
+      <button class="btn mt-4" onclick="saveNote()">💾 Save Notes</button>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="saveModal" class="modal">
-    <div class="modal-content">
-      <h2 class="text-2xl font-bold mb-4">Save Notes</h2>
-      <input type="text" id="noteTitle" placeholder="Enter note title..." class="w-full p-2 mb-4 rounded bg-gray-800 text-white" />
-
-      <div class="grid grid-cols-2 gap-4">
-        <button class="btn" onclick="saveNote()">💾 Save</button>
-        <button class="btn" onclick="downloadNote()">⬇️ Download</button>
-        <button class="btn" onclick="copyNoteText()">📋 Copy</button>
-        <button class="btn" onclick="copyNoteLink()">🔗 Copy Link</button>
-      </div>
-
-      <button class="mt-6 text-red-400 underline" onclick="closeModal()">Close</button>
+  <!-- Easter Egg Overlay -->
+  <div id="easterEggOverlay" class="easter-egg-overlay">
+    <div class="easter-egg-content">
+      <div class="celebration-text">🎉 AWESOME! 🎉</div>
+      <div class="mt-4 text-2xl">Notes saved successfully!</div>
+      <div class="mt-2 text-lg opacity-75">You're doing great work! 💪</div>
+      <button class="btn mt-6" onclick="hideEasterEgg()">Thanks! 😊</button>
     </div>
+    <!-- Confetti -->
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+  </div>
+
+  <!-- Secret Konami Code Hint -->
+  <div class="secret-konami" onclick="showKonamiHint()">
+    Try: ↑↑↓↓←→←→BA
   </div>
 
   <script>
     async function generateNotes() {
       const input = document.getElementById('inputNotes').value.trim();
       const outputField = document.getElementById('outputNotes');
-
-      if (input === "") {
-        alert("Please enter something!");
-        return;
-      }
+      if (!input) return alert("Please enter something!");
 
       outputField.value = "🤔 Generating notes...";
 
       const prompt = `
-    You are a classroom note-taking assistant. Convert the following lecture or topic into clear, concise, and well-structured bullet point notes. Include:
+You are a classroom note-taking assistant. Convert the following lecture or topic into clear, concise, and well-structured bullet point notes.
+Include definitions, key facts, important terms, and simple student-friendly language.
 
-    - Definitions where needed
-    - Key facts and concepts
-    - Important terms highlighted
-    - Use simple language suitable for students
-
-    Format the output as clean bullet points.
-
-    Text:
-    """${input}"""
-    `;
+Text:
+"""${input}"""`;
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/gemini", {
+        const res = await fetch("http://127.0.0.1:5000/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-        typeTextEffect(outputField, data.response);
-
-        } else {
-          outputField.value = `❌ Error: ${data.error}`;
-        }
-      } catch (error) {
-        outputField.value = `❌ Error connecting to AI: ${error.message}`;
+        const data = await res.json();
+        if (res.ok) typeTextEffect(outputField, data.response);
+        else outputField.value = `❌ Error: ${data.error}`;
+      } catch (err) {
+        outputField.value = `❌ Error connecting to AI: ${err.message}`;
       }
     }
 
-    function showModal() {
-      document.getElementById('saveModal').style.display = "flex";
+    function showEasterEgg() {
+      document.getElementById('easterEggOverlay').style.display = 'flex';
+      setTimeout(() => {
+        hideEasterEgg();
+      }, 4000); // Auto-hide after 4 seconds
     }
 
-    function closeModal() {
-      document.getElementById('saveModal').style.display = "none";
+    function hideEasterEgg() {
+      document.getElementById('easterEggOverlay').style.display = 'none';
     }
 
-    function saveNote() {
-      const title = document.getElementById("noteTitle").value.trim();
-      const content = document.getElementById("outputNotes").value.trim();
-      if (!title || !content) return alert("Please enter title and content!");
-
-      let saved = JSON.parse(localStorage.getItem("notes") || "[]");
-      saved.push({ title, content, date: new Date().toLocaleString() });
-      localStorage.setItem("notes", JSON.stringify(saved));
-
-      alert("✅ Note saved!");
-      closeModal();
-    }
-
-    function downloadNote() {
-      const title = document.getElementById("noteTitle").value.trim() || "MyNote";
-      const content = document.getElementById("outputNotes").value.trim();
-      const blob = new Blob([content], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.download = title + ".txt";
-      link.href = URL.createObjectURL(blob);
-      link.click();
-    }
-
-    function copyNoteText() {
-      const text = document.getElementById("outputNotes").value;
-      navigator.clipboard.writeText(text);
-      alert("📋 Notes copied!");
-    }
-
-    function copyNoteLink() {
-      const dummyURL = "https://classroom.ai/notes/view?id=123456"; // Placeholder
-      navigator.clipboard.writeText(dummyURL);
-      alert("🔗 Link copied (stub)");
-    }
-
-    async function fetchAIResponse(prompt) {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/ai-response', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ prompt }),
-        });
-
-        const data = await response.json();
-        if (data.response) {
-          document.getElementById('aiOutput').innerText = `AI Response: ${data.response}`;
-        } else {
-          document.getElementById('aiOutput').innerText = `Error: ${data.error}`;
-        }
-      } catch (error) {
-        document.getElementById('aiOutput').innerText = `Error: ${error.message}`;
-      }
-    }
-
-    function handleTool(toolName) {
-      const prompt = `Use AI to assist with ${toolName}. Provide a detailed response.`;
-      fetchAIResponse(prompt);
-    }
     function typeTextEffect(element, text, speed = 20) {
-  element.value = "";
-  let index = 0;
-
-  function typeChar() {
-    if (index < text.length) {
-      element.value += text.charAt(index);
-      element.scrollTop = element.scrollHeight; // 👈 this scrolls automatically
-      index++;
-      setTimeout(typeChar, speed);
+      element.value = "";
+      let index = 0;
+      function typeChar() {
+        if (index < text.length) {
+          element.value += text.charAt(index);
+          element.scrollTop = element.scrollHeight;
+          index++;
+          setTimeout(typeChar, speed);
+        }
+      }
+      typeChar();
     }
-  }
 
-  typeChar();
-  }
-</script>
+    // Konami Code Easter Egg
+    let konamiCode = [];
+    const konamiSequence = [
+      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+      'KeyB', 'KeyA'
+    ];
 
-  <div>
-    <h1>Notes Generator</h1>
-    <button onclick="handleTool('Notes Generator')">Generate Notes</button>
-    <p id="aiOutput"></p>
-  </div>
+    document.addEventListener('keydown', (e) => {
+      konamiCode.push(e.code);
+      if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
+      }
+      
+      if (konamiCode.join('') === konamiSequence.join('')) {
+        triggerKonamiEasterEgg();
+        konamiCode = [];
+      }
+    });
 
+    function triggerKonamiEasterEgg() {
+      document.body.style.transform = 'rotate(360deg)';
+      document.body.style.transition = 'transform 2s ease';
+      
+      setTimeout(() => {
+        document.body.style.transform = 'rotate(0deg)';
+        alert('🎮 Konami Code activated! You found the secret! 🎮\n\nYour team has excellent attention to detail! 🕵️‍♂️');
+      }, 2000);
+    }
+
+    function showKonamiHint() {
+      alert('🎮 Secret Code Detected!\n\nTry typing the classic Konami code with your keyboard:\n↑ ↑ ↓ ↓ ← → ← → B A\n\nGood luck! 🎯');
+    }
+
+    // Fun random encouragement messages
+    const encouragements = [
+      "Keep up the great work! 🌟",
+      "You're crushing it! 💪",
+      "Notes saved like a boss! 😎",
+      "Another one bites the dust! 🎵",
+      "Productivity level: EXPERT! 🏆",
+      "Your future self will thank you! 🙏",
+      "Knowledge is power! ⚡",
+      "You're on fire! 🔥"
+    ];
+
+    // Replace the celebration text randomly
+    function getRandomEncouragement() {
+      return encouragements[Math.floor(Math.random() * encouragements.length)];
+    }
+
+    // Update the Easter egg to show random encouragement
+    function showEasterEgg() {
+      const celebrationText = document.querySelector('.celebration-text');
+      const encouragementText = document.querySelector('.easter-egg-content .text-lg');
+      
+      celebrationText.textContent = '🎉 AWESOME! 🎉';
+      encouragementText.textContent = getRandomEncouragement();
+      
+      document.getElementById('easterEggOverlay').style.display = 'flex';
+      setTimeout(() => {
+        hideEasterEgg();
+      }, 4000);
+    }
+  </script>
 </body>
 </html>
-
-<!-- <script>
-async function sendToGemini(promptText, callback) {
-  const response = await fetch("http://127.0.0.1:5000/gemini", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt: promptText })
-  });
-
-  const data = await response.json();
-
-  if (data.response) {
-    callback(data.response); // Send response back to the calling function
-  } else {
-    callback("❌ Error from Gemini: " + data.error);
-  }
-}
-</script> -->
-

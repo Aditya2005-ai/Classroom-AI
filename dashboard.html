@@ -20,6 +20,25 @@
       border-color: #3b82f6;
       box-shadow: 0 0 0 1px #3b82f6;
     }
+
+    /* Custom scrollbar for file content */
+    .file-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .file-content::-webkit-scrollbar-track {
+      background: #0f172a;
+      border-radius: 4px;
+    }
+
+    .file-content::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    .file-content::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col px-6 py-10">
@@ -60,7 +79,9 @@
     <!-- Project Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
   </div>
-   <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+   
+  <!-- Delete Folder Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
     <div class="bg-[#1e293b] text-white p-6 rounded-xl max-w-md w-full relative">
       <h2 class="text-xl font-bold mb-4">Are you sure you want to delete this folder permanently?</h2>
       <button onclick="confirmDelete()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-semibold">Delete</button>
@@ -111,6 +132,17 @@
     </div>
   </div>
 
+  <!-- File Viewer Modal - Updated for better content display -->
+  <div id="fileViewModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50 p-4">
+    <div class="bg-[#1e293b] text-white w-full max-w-5xl h-[90vh] rounded-xl p-6 relative flex flex-col">
+      <button onclick="closeFileViewModal()" class="absolute top-3 right-4 text-xl text-gray-400 hover:text-white z-10">&times;</button>
+      <h2 id="fileViewTitle" class="text-2xl font-bold text-blue-400 mb-4 pr-8">📄 File Name</h2>
+      <div class="flex-1 overflow-hidden">
+        <div id="fileViewContent" class="bg-[#0f172a] border border-gray-600 rounded-md p-4 text-sm whitespace-pre-wrap h-full overflow-y-auto file-content"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Profile Modal -->
   <div id="editModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
     <div class="bg-[#1e293b] text-white rounded-xl w-full max-w-md p-6 relative flex flex-col items-center">
@@ -131,52 +163,88 @@
 
   <!-- Firebase Scripts -->
   <script type="module">
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
   import {
     getFirestore,
     collection,
     query,
     where,
-    getDocs
+    getDocs,
+    deleteDoc,
+    doc,
+    addDoc,
+    serverTimestamp,
+    updateDoc,
+    getDoc
   } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
   import { app } from "./auth.js";
 
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  import {
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  // Function to view file content - Updated for better display
+  window.viewFile = async function(folderId, fileId, fileName) {
+    try {
+      const fileDocRef = doc(db, `projects/${folderId}/files`, fileId);
+      const fileDoc = await getDoc(fileDocRef);
+      if (fileDoc.exists()) {
+        const fileData = fileDoc.data();
+        document.getElementById("fileViewTitle").textContent = `📄 ${fileName}`;
+        document.getElementById("fileViewContent").textContent = fileData.content || "No content available";
+        document.getElementById("fileViewModal").classList.remove("hidden");
+        document.getElementById("fileViewModal").classList.add("flex");
+      }
+    } catch (error) {
+      console.error("Error viewing file:", error);
+      alert("Failed to load file content.");
+    }
+  };
 
-// Add this below your onAuthStateChanged block
-window.saveProject = async function (e) {
-  e.preventDefault();
-  
-  const name = document.getElementById("projectName").value.trim();
-  const type = document.getElementById("projectType").value;
-  const desc = document.getElementById("projectDesc").value.trim();
+  window.closeFileViewModal = function() {
+    document.getElementById("fileViewModal").classList.add("hidden");
+    document.getElementById("fileViewModal").classList.remove("flex");
+  };
 
-  const user = auth.currentUser;
-  if (!user) return;
+  // Function to delete a file - Updated for immediate deletion
+  window.deleteFile = async function(folderId, fileId) {
+    try {
+      await deleteDoc(doc(db, `projects/${folderId}/files`, fileId));
+      // Refresh the folder view immediately
+      const folderTitle = document.getElementById('folderTitle').textContent.replace('📁 ', '');
+      openFolderById(folderId, folderTitle);
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      alert("Failed to delete file.");
+    }
+  };
 
-  try {
-    await addDoc(collection(db, "projects"), {
-      name,
-      type,
-      description: desc,
-      uid: user.uid,
-      createdAt: serverTimestamp()
-    });
+  // Add this below your onAuthStateChanged block
+  window.saveProject = async function (e) {
+    e.preventDefault();
+    
+    const name = document.getElementById("projectName").value.trim();
+    const type = document.getElementById("projectType").value;
+    const desc = document.getElementById("projectDesc").value.trim();
 
-    closeProjectModal();
-    setTimeout(() => location.reload(), 500); // reload to show new folder
-  } catch (err) {
-    console.error("Error creating folder:", err);
-    alert("Failed to create folder.");
-  }
-};
+    const user = auth.currentUser;
+    if (!user) return;
 
+    try {
+      await addDoc(collection(db, "projects"), {
+        name,
+        type,
+        description: desc,
+        uid: user.uid,
+        createdAt: serverTimestamp()
+      });
+
+      closeProjectModal();
+      setTimeout(() => location.reload(), 500);
+    } catch (err) {
+      console.error("Error creating folder:", err);
+      alert("Failed to create folder.");
+    }
+  };
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) return window.location.href = "home.html";
@@ -217,15 +285,50 @@ window.saveProject = async function (e) {
     } else {
       fSnap.forEach(d=> {
         const f = d.data();
+        const fileId = d.id;
         const li = document.createElement("li");
-        li.className = "bg-[#1e293b] border border-gray-700 px-4 py-2 rounded-md text-sm";
-        li.innerHTML = `<strong>${f.title}</strong><br><span class="text-gray-400 text-xs">${f.content.slice(0,100)}…</span>`;
+        li.className = "bg-[#1e293b] border border-gray-700 px-4 py-2 rounded-md text-sm relative";
+        li.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex-1 cursor-pointer" onclick="viewFile('${folderId}', '${fileId}', '${f.title}')">
+              <strong>${f.title}</strong><br>
+              <span class="text-gray-400 text-xs">${f.content ? f.content.slice(0,100) + '…' : 'No content'}</span>
+            </div>
+            <button onclick="deleteFile('${folderId}', '${fileId}')" class="ml-2 text-red-400 hover:text-red-300 text-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        `;
         fileList.appendChild(li);
       });
     }
 
     document.getElementById('folderView').classList.remove("hidden");
     document.getElementById('folderView').classList.add("flex");
+  };
+    window.saveProfileChanges = async function () {
+    const newName = document.getElementById("editName").value.trim();
+    const newPhoto = document.getElementById("editPhoto").value.trim();
+
+    const user = auth.currentUser;
+    if (!user) return alert("You must be signed in.");
+
+    try {
+      await updateProfile(user, {
+        displayName: newName || user.displayName,
+        photoURL: newPhoto || user.photoURL,
+      });
+
+      document.getElementById("editModal").classList.add("hidden");
+      document.getElementById("editModal").classList.remove("flex");
+      setTimeout(() => location.reload(), 300);
+
+    } catch (error) {
+      console.error("❌ Error updating profile:", error);
+      alert("Failed to update profile.");
+    }
   };
 </script>
 
@@ -238,12 +341,33 @@ window.saveProject = async function (e) {
 
   <!-- Non-module Script -->
   <script>
-   
+    function openEditModal() {
+    const modal = document.getElementById("editModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
 
-    function closeEditModal() {
-      document.getElementById("editModal").classList.add("hidden");
-      document.getElementById("editModal").classList.remove("flex");
-    }
+    // ✅ Populate user info (Firebase auth)
+    import("https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js").then(module => {
+      const { getAuth } = module;
+      import("./auth.js").then(({ app }) => {
+        const auth = getAuth(app);
+        const user = auth.currentUser;
+        if (user) {
+          document.getElementById("editProfilePic").src = user.photoURL || "user.png";
+          document.getElementById("editName").value = user.displayName || "";
+          document.getElementById("editEmail").value = user.email || "";
+        }
+      });
+    });
+  }
+
+
+  function closeEditModal() {
+    const modal = document.getElementById("editModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+
 
     function openProjectModal() {
       document.getElementById("projectModal").classList.remove("hidden");
@@ -261,99 +385,24 @@ window.saveProject = async function (e) {
       const fileList = document.getElementById('folderFiles');
       fileList.innerHTML = "";
 
-      // When connected to Firestore, fetch and render files here
-      // Example placeholder (optional):
-      // const li = document.createElement('li');
-      // li.textContent = "No files available yet.";
-      // fileList.appendChild(li);
-
       document.getElementById('folderView').classList.remove("hidden");
       document.getElementById('folderView').classList.add("flex");
     }
-
 
     function closeFolderView() {
       document.getElementById('folderView').classList.add("hidden");
       document.getElementById('folderView').classList.remove("flex");
     }
+
+    function closeDeleteModal() {
+      document.getElementById("deleteModal").classList.add("hidden");
+      document.getElementById("deleteModal").classList.remove("flex");
+    }
+
+    function closeRenameModal() {
+      document.getElementById("renameModal").classList.add("hidden");
+      document.getElementById("renameModal").classList.remove("flex");
+    }
   </script>
 </body>
-<script>
-  let selectedFolderId = null;
-
-window.confirmDelete = function (folderId) {
-  selectedFolderId = folderId;
-  document.getElementById("deleteModal").classList.remove("hidden");
-  document.getElementById("deleteModal").classList.add("flex");
-};
-
-window.deleteFolder = async function () {
-  const db = getFirestore(app);
-  await deleteDoc(doc(db, "projects", selectedFolderId));
-  setTimeout(() => location.reload(), 500);
-};
-  let renameFolderId = null;
-
-window.openRenameModal = function (folderId, name, desc) {
-  renameFolderId = folderId;
-  document.getElementById("renameInput").value = name;
-  document.getElementById("renameDesc").value = desc;
-  document.getElementById("renameModal").classList.remove("hidden");
-  document.getElementById("renameModal").classList.add("flex");
-};
-
-window.saveRename = async function () {
-  const newName = document.getElementById("renameInput").value.trim();
-  const newDesc = document.getElementById("renameDesc").value.trim();
-  const db = getFirestore(app);
-  await updateDoc(doc(db, "projects", renameFolderId), {
-    name: newName,
-    description: newDesc
-  });
-  setTimeout(() => location.reload(), 500);
-};
-async function openFolder(name, desc) {
-  document.getElementById('folderTitle').textContent = `📁 ${name}`;
-  const fileList = document.getElementById('folderFiles');
-  fileList.innerHTML = "";
-
-  try {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    // 🔍 Step 1: Find the folderId from name
-    const q = query(collection(db, "projects"), where("uid", "==", user.uid), where("name", "==", name));
-    const snap = await getDocs(q);
-
-    if (!snap.empty) {
-      const folderDoc = snap.docs[0];
-      const folderId = folderDoc.id;
-
-      // 🔍 Step 2: Get all files from this folder's subcollection
-      const filesRef = collection(db, `projects/${folderId}/files`);
-      const fileSnap = await getDocs(filesRef);
-
-      if (fileSnap.empty) {
-        fileList.innerHTML = `<li class="text-gray-400">No files found in this folder.</li>`;
-      } else {
-        fileSnap.forEach(doc => {
-          const file = doc.data();
-          const li = document.createElement("li");
-          li.className = "bg-[#0f172a] border border-gray-700 px-4 py-2 rounded-md text-sm";
-          li.innerHTML = `<strong>${file.title}</strong><br><span class="text-gray-400 text-xs">${file.content.slice(0, 100)}...</span>`;
-          fileList.appendChild(li);
-        });
-      }
-    }
-  } catch (e) {
-    console.error("Error fetching files:", e);
-    fileList.innerHTML = `<li class="text-red-500 text-sm">Error loading files.</li>`;
-  }
-
-  // Show the folder modal
-  document.getElementById('folderView').classList.remove("hidden");
-  document.getElementById('folderView').classList.add("flex");
-}
-
-</script>
 </html>
