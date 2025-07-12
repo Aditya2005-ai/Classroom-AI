@@ -189,7 +189,7 @@
   </div>
 
   <div class="input-wrapper">
-    <input type="text" id="questionInput" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')submitQuestion();" />
+    <input type="text" id="questionInput" placeholder="Ask anything..." />
     <button onclick="submitQuestion()">➤</button>
   </div>
 
@@ -248,23 +248,29 @@
     async function submitQuestion() {
       const input = document.getElementById("questionInput");
       const question = input.value.trim();
-      if (question === "" || question.length > 1000 || currentChatId === null) return alert("Enter a valid question (1-1000 chars).");
 
-      introText.classList.add("hidden");
+      // ✅ Ensure chat session is initialized
+      if (!currentChatId) startNewChat();
 
-      const userBubble = document.createElement("div");
-      userBubble.className = "chat-bubble user";
-      userBubble.innerText = question;
-      chatBox.appendChild(userBubble);
-      chatData[currentChatId].push({ role: "user", text: question });
-      input.value = "";
-
-      if (!chatTitles[currentChatId]) {
-        const preview = question.length > 20 ? question.slice(0, 20) + "..." : question;
-        chatTitles[currentChatId] = preview;
-        const sidebarItem = document.getElementById("sidebar_" + currentChatId);
-        if (sidebarItem) sidebarItem.innerText = preview;
+      // ✅ Also handle edge case if chatData[currentChatId] is missing
+      if (!chatData[currentChatId]) {
+        chatData[currentChatId] = [];
       }
+
+      if (question === "" || question.length > 1000) {
+        return alert("Enter a valid question (1-1000 chars).");
+      }
+
+  introText.classList.add("hidden");
+    
+    const userBubble = document.createElement("div");
+    userBubble.className = "chat-bubble user";
+    userBubble.innerText = question;
+    chatBox.appendChild(userBubble);
+    chatData[currentChatId].push({ role: "user", text: question });
+    input.value = ""; // clear input
+
+
 
       const loading = document.createElement("div");
       loading.className = "loading-bubble";
@@ -319,6 +325,14 @@
       localStorage.setItem("chatData", JSON.stringify(chatData));
       localStorage.setItem("chatTitles", JSON.stringify(chatTitles));
     }
+    // Handle Enter key press
+    document.getElementById("questionInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+    e.preventDefault();
+    submitQuestion();
+    }
+});
+
   </script>
 </body>
 </html>
