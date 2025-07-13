@@ -6,12 +6,20 @@
   <title>Code Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-6 min-h-screen">
-  <!-- Logo + Title -->
-  <div class="flex items-center gap-4 mb-6">
-    <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
-    <h1 class="text-3xl font-bold text-blue-400">Code Generator</h1>
-  </div>
+<body class="min-h-screen flex flex-col px-2 py-1 transition-opacity duration-500 opacity-100">
+ 
+ <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Left: Logo and Title -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <h1 class="text-2xl font-bold text-blue-400">Code Generator</h1>
+    </div>
+
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
   <!-- Full Height Container -->
   <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-100px)]">
@@ -66,6 +74,19 @@
         output.innerText = "❌ Failed to connect to AI server: " + error.message;
       }
     }
+     function goHome() {
+      document.body.classList.remove("opacity-100");
+      document.body.classList.add("opacity-0");
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 500);
+    }
+
+  // Fade-in on load (optional)
+  window.addEventListener("load", () => {
+    document.body.classList.remove("opacity-0");
+    document.body.classList.add("opacity-100");
+  });
   </script>
 </body>
 </html>

@@ -190,23 +190,32 @@
     }
   </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="min-h-screen flex flex-col px-2 py-1 transition-opacity duration-500 opacity-100">
 
-  <!-- Logo -->
-  <div class="p-4">
-    <img src="logo.png" alt="Logo" class="w-10">
-  </div>
+
+ <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Left: Logo and Title -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <h1 class="text-2xl font-bold text-blue-400">Notes Generator</h1>
+    </div>
+
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
   <!-- Main Container -->
-  <div class="flex-1 flex flex-col lg:flex-row gap-4 p-4">
+  <div class="flex h-screen pt-16 px-6 gap-6">
     <div class="flex-1 flex flex-col">
-      <h2 class="text-xl font-bold mb-2">📝 Topic / Lecture Text</h2>
-      <textarea id="inputNotes" placeholder="Paste topic or lecture here..."></textarea>
+      <h2 class="text-xl font-bold mb-4">📝 Topic / Lecture Text</h2>
+      <textarea id="inputNotes" placeholder=" Paste topic or lecture here..."></textarea>
       <button class="btn mt-4" onclick="generateNotes()">Generate Notes</button>
     </div>
     <div class="flex-1 flex flex-col">
-      <h2 class="text-xl font-bold mb-2">📄 Generated Notes</h2>
-      <textarea id="outputNotes" readonly placeholder="Your notes will appear here..."></textarea>
+      <h2 class="text-xl font-bold mb-4">📄 Generated Notes</h2>
+      <textarea id="outputNotes" readonly placeholder=" Your notes will appear here..."></textarea>
       <button class="btn mt-4" onclick="saveNote()">💾 Save Notes</button>
     </div>
   </div>
@@ -355,6 +364,19 @@ Text:
         hideEasterEgg();
       }, 4000);
     }
+    function goHome() {
+    document.body.classList.remove("opacity-100");
+    document.body.classList.add("opacity-0");
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500);
+  }
+
+  // Fade-in on load (optional)
+  window.addEventListener("load", () => {
+    document.body.classList.remove("opacity-0");
+    document.body.classList.add("opacity-100");
+  });
   </script>
 </body>
 </html>

@@ -30,13 +30,20 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-white">
+<body class="min-h-screen flex flex-col px-2 py-1 transition-opacity duration-500 opacity-100">
 
-  <!-- Header -->
-  <div class="fixed top-0 left-0 p-4 flex items-center gap-4">
-    <img src="logo.png" alt="Logo" class="w-12 h-auto"/>
-    <h1 class="text-3xl font-extrabold text-blue-400">Summarizer</h1>
-  </div>
+  <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Left: Logo and Title -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <h1 class="text-2xl font-bold text-blue-400">Summarizer</h1>
+    </div>
+
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
   <!-- Main Content -->
   <div class="flex h-screen pt-16 px-6 gap-6">
@@ -289,6 +296,23 @@
     // Make functions global
     window.showSaveModal = showSaveModal;
     window.closeModal = closeModal;
+
+    
+  function goHome() {
+    document.body.classList.remove("opacity-100");
+    document.body.classList.add("opacity-0");
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500);
+  }
+
+  // Fade-in on load (optional)
+  window.addEventListener("load", () => {
+    document.body.classList.remove("opacity-0");
+    document.body.classList.add("opacity-100");
+  });
+
+
   </script>
 
 </body>
