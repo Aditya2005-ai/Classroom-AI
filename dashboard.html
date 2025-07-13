@@ -198,7 +198,7 @@
 
   // Function to view file content - Updated for better display
   window.viewFile = async function(folderId, fileId, fileName) {
-    if (!showSignInModalIfNotLoggedIn()) return;
+    
 
     try {
       const fileDocRef = doc(db, `projects/${folderId}/files`, fileId);
@@ -263,7 +263,11 @@
   };
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user) ;
+    if (!user) {
+    setLoginState(fasle);
+    return;
+    }
+    setLoginState(true);
 
     document.getElementById("userName").textContent = user.displayName || "User";
     document.getElementById("userEmail").textContent = user.email;
@@ -290,7 +294,7 @@
   });
 
   window.openFolderById = async function(folderId, folderName) {
-    if (!showSignInModalIfNotLoggedIn()) return;
+    
 
     document.getElementById('folderTitle').textContent = `📁 ${folderName}`;
     const fileList = document.getElementById('folderFiles');
@@ -442,7 +446,6 @@
     }
 
     function openFolder(name, desc) {
-      if (!showSignInModalIfNotLoggedIn()) return;
       
       document.getElementById('folderTitle').textContent = `📁 ${name}`;
 
