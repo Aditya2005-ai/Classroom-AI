@@ -34,10 +34,19 @@
     .btn-run:hover { background-color: #d97706; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-[#0f172a] text-white">
+<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-[#0f172a] text-white font-sans transition-opacity duration-500 opacity-100">
+ <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
-  <div class="absolute top-4 left-4">
-    <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-10">
+    <img src="logo.png" alt="Logo" class="w-10 h-10" />
+    <h1 class="text-2xl font-bold text-blue-400">Classroom.AI</h1>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-7xl mt-8 fade-in">
@@ -126,6 +135,19 @@
       link.click();
       URL.revokeObjectURL(url);
     }
+    function goHome() {
+    document.body.classList.remove("opacity-100");
+    document.body.classList.add("opacity-0");
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500);
+  }
+
+  // Fade-in on load (optional)
+  window.addEventListener("load", () => {
+    document.body.classList.remove("opacity-0");
+    document.body.classList.add("opacity-100");
+  });
   </script>
 
 </body>
