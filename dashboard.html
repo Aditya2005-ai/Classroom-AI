@@ -41,13 +41,22 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col px-6 py-10">
+<body class="min-h-screen flex flex-col px-6 py-10 transition-opacity duration-500 opacity-100">
 
-  <!-- Top Header -->
-  <header class="flex items-center gap-3 px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
-    <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
-    <h1 class="text-2xl font-bold text-blue-400">Classroom.AI</h1>
+
+  <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Left: Logo and Title -->
+    <div class="flex items-center gap-3">
+      <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+      <h1 class="text-2xl font-bold text-blue-400">Classroom.AI</h1>
+    </div>
+
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
   </header>
+
 
   <div class="pt-20 px-6">
     <!-- User Profile Section -->
@@ -337,6 +346,17 @@
     document.getElementById('folderView').classList.add("hidden");
     document.getElementById('folderView').classList.remove("flex");
   }
+   function goHome() {
+    document.body.classList.remove("opacity-100");
+    document.body.classList.add("opacity-0");
+    setTimeout(() => {
+      window.location.href = "home.html";
+    }, 500); // Match duration with transition
+  }
+    window.addEventListener("load", () => {
+    document.body.classList.remove("opacity-0");
+    document.body.classList.add("opacity-100");
+  });
 </script>
 
   <!-- Non-module Script -->
