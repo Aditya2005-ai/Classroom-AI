@@ -192,6 +192,23 @@
     <input type="text" id="questionInput" placeholder="Ask anything..." />
     <button onclick="submitQuestion()">➤</button>
   </div>
+  <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50">
+      <div class="bg-[#1e293b] p-6 rounded-xl text-white w-full max-w-sm text-center shadow-xl border border-gray-600">
+        <h2 class="text-lg font-semibold mb-4">Do you want to delete history permanently?</h2>
+        <div class="flex justify-center gap-4">
+          <button onclick="confirmClearHistory()"
+            class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-semibold transition">
+            Delete Permanently
+          </button>
+          <button onclick="closeDeleteModal()"
+            class="text-gray-400 hover:text-white px-4 py-2 rounded transition">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
 
   <script>
     const API_BASE_URL = "http://127.0.0.1:5000";
@@ -210,15 +227,21 @@
       if (!currentChatId) startNewChat();
     };
 
-    function startNewChat() {
+   function startNewChat() {
       const chatId = "chat_" + Date.now();
       currentChatId = chatId;
       chatData[chatId] = [];
-      introText.classList.remove("hidden");
-      addChatItem(chatId, "New Chat #" + chatCounter++);
+
+      // Set default title and show it in sidebar
+      const defaultTitle = "New Chat";
+      chatTitles[chatId] = defaultTitle;
+      addChatItem(chatId, defaultTitle);
+
       chatBox.innerHTML = "";
+      introText.classList.remove("hidden");
       saveAll();
     }
+
 
     function addChatItem(chatId, title) {
       const item = document.createElement("div");
@@ -270,6 +293,19 @@
     chatData[currentChatId].push({ role: "user", text: question });
     input.value = ""; // clear input
 
+    // Rename the chat title after the first question
+    if (chatTitles[currentChatId] === "New Chat") {
+      const newTitle = question.slice(0, 30) + (question.length > 30 ? "…" : "");
+      chatTitles[currentChatId] = newTitle;
+
+      // Update sidebar text
+      const sidebarItem = document.getElementById("sidebar_" + currentChatId);
+      if (sidebarItem) sidebarItem.innerText = newTitle;
+
+      saveAll(); // Save updated title
+    }
+
+
 
 
       const loading = document.createElement("div");
@@ -307,19 +343,32 @@
     }
 
     function clearChatHistory() {
-      if (confirm("Are you sure you want to clear all chat history?")) {
-        localStorage.removeItem("chatData");
-        localStorage.removeItem("chatTitles");
-        chatData = {};
-        chatTitles = {};
-        chatCounter = 1; // ← Reset counter here
-        chatHistory.innerHTML = "";
-        chatBox.innerHTML = "";
-        introText.classList.remove("hidden");
-        
-      }
+      document.getElementById("deleteModal").classList.remove("hidden");
+      document.getElementById("deleteModal").classList.add("flex");
+    }
+    function closeDeleteModal() {
+      document.getElementById("deleteModal").classList.add("hidden");
+      document.getElementById("deleteModal").classList.remove("flex");
     }
 
+    function confirmClearHistory() {
+    localStorage.removeItem("chatData");
+    localStorage.removeItem("chatTitles");
+
+    // Optional: add fade-out effect
+    document.body.classList.add("transition-opacity", "duration-500");
+    document.body.classList.remove("opacity-100");
+    document.body.classList.add("opacity-0");
+
+    setTimeout(() => {
+      location.reload();
+    }, 500); // Wait for fade effect to complete
+  }
+
+  // Optional: fade in on load
+  window.addEventListener("load", () => {
+    document.body.classList.add("opacity-100");
+  });
 
     function saveAll() {
       localStorage.setItem("chatData", JSON.stringify(chatData));
