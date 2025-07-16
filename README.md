@@ -35,7 +35,7 @@ Modern classrooms often lack a centralized system where students can:
 
 * 🌐 **Live Website:** [Classroom.AI on Netlify](#)
 * 🔁 **Backend API:** [Flask Render App](#)
-* 🎬 **Demo Video:** [Watch Now](#)
+
 
 ---
 
@@ -45,7 +45,7 @@ Modern classrooms often lack a centralized system where students can:
 | ----------------- | ------------------------------------------------------------- |
 | ✍️ Text Tools     | Essay Writer, Notes Generator, Summarizer, Question Answering |
 | 🎨 Visual Tools   | Image QnA (Ask about diagrams), OCR Scanner                   |
-| 🎤 Audio Tools    | Speech-To-Text                                                |
+| 🎤 Audio Tools    | Voice Assistant                                                |
 | 💻 Coding Tools   | Code Generator, Code Debugger, Code Explainer                 |
 | 📂 Dashboard      | Save content into folders, Rename/Delete/Organize             |
 | 🔐 Auth & Profile | Google Sign-In, Profile Editing                               |
