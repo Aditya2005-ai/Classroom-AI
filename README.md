@@ -100,7 +100,11 @@ Include images of:
   <img width="1909" height="865" alt="image" src="https://github.com/user-attachments/assets/520bfffe-1d32-4f5a-baf1-09cfab744fb5" />
 
 * ✅ Dashboard showing folders and saved files
-* ✅ Profile edit modal or create folder popup
+  <img width="1906" height="872" alt="image" src="https://github.com/user-attachments/assets/c37c9a5a-832d-4b1c-a231-e73cc7031a8a" />
+
+* ✅Create folder popup
+  <img width="1904" height="864" alt="image" src="https://github.com/user-attachments/assets/6082ce61-94f0-47df-9743-e2ca790253c6" />
+
 
 ---
 
