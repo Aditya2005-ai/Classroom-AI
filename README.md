@@ -87,20 +87,8 @@ Modern classrooms often lack a centralized system where students can:
 
 ---
 
-## 📁 Project Structure
 
-```
-Classroom-AI/
-│
-├── frontend/          → HTML, Tailwind CSS, JavaScript
-│   ├── tools/         → Individual tools like Essay, Summarizer, etc.
-│   ├── dashboard.html → Dashboard and folders UI
-│
-├── scripts/           → auth.js, database.js, file save modals
-├── backend/           → Flask API code (connect_api.py)
-├── assets/            → Images, logo, icons
-└── README.md          → Project overview
-```
+
 
 ---
 
@@ -109,6 +97,8 @@ Classroom-AI/
 Include images of:
 
 * ✅ Essay Writer tool in action
+  <img width="1909" height="865" alt="image" src="https://github.com/user-attachments/assets/520bfffe-1d32-4f5a-baf1-09cfab744fb5" />
+
 * ✅ Dashboard showing folders and saved files
 * ✅ Profile edit modal or create folder popup
 
