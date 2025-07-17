@@ -126,23 +126,6 @@ $ python connect_api.py
 
 ---
 
-## 🧾 Business Model
-
-### 🎯 Freemium Access
-
-* Limited daily usage for free users
-* Premium plan for unlimited access to tools
-
-### 📢 Ads & Affiliates
-
-* EdTech promotions inside dashboard UI (non-intrusive)
-
-### 🏫 Institutional Plans
-
-* Offer Classroom.AI to schools for a yearly subscription
-* Teachers get monitoring and assignment tools
-
----
 
 ## 📈 Future Roadmap
 
