@@ -35,7 +35,7 @@ Modern classrooms often lack a centralized system where students can:
 
 * 🌐 **Live Website:** [Classroom.AI on Netlify](#)
 * 🔁 **Backend API:** [Flask Render App](#)
-* 🎬 **Demo Video:** [Watch Now](#)
+
 
 ---
 
@@ -45,7 +45,7 @@ Modern classrooms often lack a centralized system where students can:
 | ----------------- | ------------------------------------------------------------- |
 | ✍️ Text Tools     | Essay Writer, Notes Generator, Summarizer, Question Answering |
 | 🎨 Visual Tools   | Image QnA (Ask about diagrams), OCR Scanner                   |
-| 🎤 Audio Tools    | Speech-To-Text                                                |
+| 🎤 Audio Tools    | Voice Assistant                                                |
 | 💻 Coding Tools   | Code Generator, Code Debugger, Code Explainer                 |
 | 📂 Dashboard      | Save content into folders, Rename/Delete/Organize             |
 | 🔐 Auth & Profile | Google Sign-In, Profile Editing                               |
@@ -87,20 +87,8 @@ Modern classrooms often lack a centralized system where students can:
 
 ---
 
-## 📁 Project Structure
 
-```
-Classroom-AI/
-│
-├── frontend/          → HTML, Tailwind CSS, JavaScript
-│   ├── tools/         → Individual tools like Essay, Summarizer, etc.
-│   ├── dashboard.html → Dashboard and folders UI
-│
-├── scripts/           → auth.js, database.js, file save modals
-├── backend/           → Flask API code (connect_api.py)
-├── assets/            → Images, logo, icons
-└── README.md          → Project overview
-```
+
 
 ---
 
@@ -109,8 +97,14 @@ Classroom-AI/
 Include images of:
 
 * ✅ Essay Writer tool in action
+  <img width="1909" height="865" alt="image" src="https://github.com/user-attachments/assets/520bfffe-1d32-4f5a-baf1-09cfab744fb5" />
+
 * ✅ Dashboard showing folders and saved files
-* ✅ Profile edit modal or create folder popup
+  <img width="1906" height="872" alt="image" src="https://github.com/user-attachments/assets/c37c9a5a-832d-4b1c-a231-e73cc7031a8a" />
+
+* ✅Create folder popup
+  <img width="1904" height="864" alt="image" src="https://github.com/user-attachments/assets/6082ce61-94f0-47df-9743-e2ca790253c6" />
+
 
 ---
 
@@ -132,23 +126,6 @@ $ python connect_api.py
 
 ---
 
-## 🧾 Business Model
-
-### 🎯 Freemium Access
-
-* Limited daily usage for free users
-* Premium plan for unlimited access to tools
-
-### 📢 Ads & Affiliates
-
-* EdTech promotions inside dashboard UI (non-intrusive)
-
-### 🏫 Institutional Plans
-
-* Offer Classroom.AI to schools for a yearly subscription
-* Teachers get monitoring and assignment tools
-
----
 
 ## 📈 Future Roadmap
 
