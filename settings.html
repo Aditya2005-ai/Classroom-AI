@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – Classroom.AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-[#0f172a] text-white min-h-screen relative p-8">
 
   <!-- Back to Home Link -->
   <a href="home.html" class="absolute top-6 left-6 text-blue-400 hover:underline text-lg font-medium">
-    ⬅ Back to Home
+    ← Back to Home
   </a>
 
   <!-- Settings Heading -->
@@ -19,35 +21,46 @@
   <!-- Settings Options -->
   <div class="max-w-xl mx-auto space-y-6">
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      ⚙️ Account
+    <a href="account.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="user" class="w-6 h-6 text-blue-400"></i>
+      <span>Account</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      🔒 Privacy
+    <a href="privacy.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="lock" class="w-6 h-6 text-blue-400"></i>
+      <span>Privacy</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      🖼️ Avatar
+    <a href="avatar.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="image" class="w-6 h-6 text-blue-400"></i>
+      <span>Avatar</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      🔔 Notifications
+    <a href="notifications.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="bell" class="w-6 h-6 text-blue-400"></i>
+      <span>Notifications</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      💾 Storage and Data
+    <a href="storage.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="database" class="w-6 h-6 text-blue-400"></i>
+      <span>Storage and Data</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      🌐 App Language
+    <a href="language.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="globe" class="w-6 h-6 text-blue-400"></i>
+      <span>App Language</span>
     </a>
 
-    <a href="#" class="block bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
-      ❓ Help
+    <a href="help.html" class="flex items-center gap-4 bg-[#1e293b] hover:bg-[#334155] p-5 rounded-lg shadow transition text-lg font-medium">
+      <i data-lucide="help-circle" class="w-6 h-6 text-blue-400"></i>
+      <span>Help</span>
     </a>
 
   </div>
 
+  <!-- Activate Lucide Icons -->
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 </html>
