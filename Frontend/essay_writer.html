@@ -23,7 +23,13 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 text-white">
+<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-[#0f172a] text-white font-sans transition-opacity duration-500 opacity-100">
+ <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
   <!-- Header -->
   <div class="flex items-center gap-3 mb-10">
@@ -78,6 +84,11 @@
   <div id="successMessage" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
     ✅ Essay saved successfully!
   </div>
+  <!-- Alert Message -->
+  <div id="signinAlert" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-500 z-[9999]">
+    You need to sign in first.
+  </div>
+
 
   <!-- ✅ Firebase SDKs -->
   <script type="module" src="./auth.js">
@@ -101,9 +112,10 @@
   // ✅ Load folders when user is authenticated
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "home.html"; // Redirect if not logged in
-      return;
+    setLoginState(fasle);
+    return;
     }
+    setLoginState(true);
 
     currentUser = user;
     await loadFolders();
@@ -111,6 +123,8 @@
 
   // ✅ Load folders function
   async function loadFolders() {
+    if (!showSignInModalIfNotLoggedIn()) return;
+
     const folderSelect = document.getElementById("folderSelect");
     folderSelect.innerHTML = `<option value="">-- Select Folder --</option>`; // Clear previous options
 
@@ -180,6 +194,36 @@
 
   <!-- Non-module Script -->
   <script>
+    let isUserLoggedIn = false;
+
+  // Called from onAuthStateChanged in your main module
+  function setLoginState(status) {
+    isUserLoggedIn = status;
+  }
+
+  // Show sign in modal + alert if user not signed in
+  function showSignInModalIfNotLoggedIn() {
+    if (!isUserLoggedIn) {
+      // ✅ Show sign-in modal (you should already have this function)
+      document.getElementById("authModal")?.classList.remove("hidden");
+      document.getElementById("authModal")?.classList.add("flex");
+
+      // ✅ Show alert
+      const alertBox = document.getElementById("signinAlert");
+      if (alertBox) {
+        alertBox.classList.add("opacity-100");
+        alertBox.classList.remove("opacity-0");
+
+        setTimeout(() => {
+          alertBox.classList.remove("opacity-100");
+          alertBox.classList.add("opacity-0");
+        }, 3000);
+      }
+      return false;
+    }
+    return true;
+  }
+
     const topicInput = document.getElementById("topicInput");
     const output = document.getElementById("output");
     const outputContainer = document.getElementById("outputContainer");
@@ -187,6 +231,8 @@
     const saveModal = document.getElementById("saveModal");
 
     async function generateEssay() {
+      if (!showSignInModalIfNotLoggedIn()) return;
+
       const topic = topicInput.value.trim();
       if (!topic) return alert("Please enter a topic.");
       output.innerText = "⏳ Generating essay...";
@@ -211,6 +257,8 @@
     }
 
     function showSaveModal() {
+      if (!showSignInModalIfNotLoggedIn()) return;
+
       saveModal.classList.remove("hidden");
     }
 
@@ -223,6 +271,19 @@
       if (event.key === "Enter") {
         generateEssay();
       }
+    });
+     function goHome() {
+      document.body.classList.remove("opacity-100");
+      document.body.classList.add("opacity-0");
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 500);
+    }
+
+    // Fade-in on load (optional)
+    window.addEventListener("load", () => {
+      document.body.classList.remove("opacity-0");
+      document.body.classList.add("opacity-100");
     });
   </script>
 

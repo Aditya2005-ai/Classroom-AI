@@ -20,7 +20,13 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-[#0f172a] text-white">
+<body class="min-h-screen flex flex-col items-center justify-center px-6 py-10 bg-[#0f172a] text-white font-sans transition-opacity duration-500 opacity-100">
+  <header class="flex items-center justify-between px-6 py-4 bg-[#0f172a] fixed top-0 left-0 w-full z-50">
+    <!-- Right: Back Button -->
+    <button onclick="goHome()" class="text-sm text-blue-400 hover:text-white transition">
+        ← Back to Home
+    </button>
+  </header>
 
   <!-- Header -->
   <div class="flex items-center gap-3 mb-10">
@@ -81,6 +87,13 @@
         output.innerText = "❌ Error connecting to AI server.";
         console.error(err);
       }
+    }
+    function goHome() {
+      document.body.classList.remove("opacity-100");
+      document.body.classList.add("opacity-0");
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 500);
     }
   </script>
 
