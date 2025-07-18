@@ -75,12 +75,37 @@ window.logoutUser = function () {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     document.getElementById("authText").style.display = "none";
-    document.getElementById("profileAvatar").style.display = "block";
+    const avatarImg = document.getElementById("userAvatar");
+    if (avatarImg) {
+      avatarImg.src = user.photoURL || "user.png"; // Set profile pic
+      avatarImg.style.display = "block"; // Show avatar
+    }
+     // ✅ Update name and email
+    const nameElement = document.getElementById("userName");
+    const emailElement = document.getElementById("userEmail");
+    const infoBlock = document.getElementById("userInfo");
+
+    if (nameElement) nameElement.textContent = user.displayName || "No Name";
+    if (emailElement) emailElement.textContent = user.email || "No Email";
+    if (infoBlock) infoBlock.style.display = "block";
+
+    // ✅ Hide auth text (login button)
+    document.getElementById("authText").style.display = "none";
+  } else {
+    // ✅ Hide user info, show login button
+    document.getElementById("authText").style.display = "block";
+    document.getElementById("profileAvatar").style.display = "none";
+    const infoBlock = document.getElementById("userInfo");
+    if (infoBlock) infoBlock.style.display = "none";
+  }
+
+
+
     document.getElementById("dropdownAvatar").src = user.photoURL || "user.png";
     const nameElement = document.querySelector("#dropdownMenu p");
     if (nameElement) {
       nameElement.textContent = user.displayName || user.email;
-    }
+    
   } else {
     document.getElementById("authText").style.display = "block";
     document.getElementById("profileAvatar").style.display = "none";
