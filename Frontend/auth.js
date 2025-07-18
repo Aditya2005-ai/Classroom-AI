@@ -110,6 +110,21 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("authText").style.display = "block";
     document.getElementById("profileAvatar").style.display = "none";
   }
+   // ✅ NEW: Call backend API on user login
+    fetch("https://classroom-api.onrender.com/init-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.displayName
+      })
+    })
+    .then(response => response.json())
+    .then(data => console.log("Backend says:", data.message))
+    .catch(err => console.error("Backend error:", err));
+  
 });
 
 export { app };

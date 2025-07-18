@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 import logging
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -9,7 +10,7 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 
 # Configure Gemini API key
-genai.configure(api_key="AIzaSyDfE3sz_Hoj4oFgty9fRIPRod8cjMIF9GQ")  # Replace with your actual key
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))  # Replace with your actual key
 
 # Gemini helper function
 def call_gemini(prompt, model_name='gemini-2.5-flash'):
