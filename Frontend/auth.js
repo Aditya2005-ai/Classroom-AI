@@ -73,58 +73,47 @@ window.logoutUser = function () {
 
 // ✅ Update UI on login state
 onAuthStateChanged(auth, (user) => {
+  const authText = document.getElementById("authText");
+  const avatarImg = document.getElementById("userAvatar");
+  const profileAvatar = document.getElementById("profileAvatar");
+  const dropdownAvatar = document.getElementById("dropdownAvatar");
+  const nameElement = document.getElementById("userName");
+  const emailElement = document.getElementById("userEmail");
+  const infoBlock = document.getElementById("userInfo");
+  const dropdownName = document.querySelector("#dropdownMenu p");
+
   if (user) {
-    document.getElementById("authText").style.display = "none";
-    const avatarImg = document.getElementById("userAvatar");
+    // Show profile UI
+    if (authText) authText.style.display = "none";
     if (avatarImg) {
-      avatarImg.src = user.photoURL || "user.png"; // Set profile pic
-      avatarImg.style.display = "block"; // Show avatar
+      avatarImg.src = user.photoURL || "user.png";
+      avatarImg.style.display = "block";
     }
-     // ✅ Update name and email
-    const nameElement = document.getElementById("userName");
-    const emailElement = document.getElementById("userEmail");
-    const infoBlock = document.getElementById("userInfo");
+    if (profileAvatar) profileAvatar.style.display = "block";
+    if (dropdownAvatar) dropdownAvatar.src = user.photoURL || "user.png";
 
     if (nameElement) nameElement.textContent = user.displayName || "No Name";
     if (emailElement) emailElement.textContent = user.email || "No Email";
     if (infoBlock) infoBlock.style.display = "block";
+    if (dropdownName) dropdownName.textContent = user.displayName || user.email;
 
-    // ✅ Hide auth text (login button)
-    document.getElementById("authText").style.display = "none";
-  } else {
-    // ✅ Hide user info, show login button
-    document.getElementById("authText").style.display = "block";
-    document.getElementById("profileAvatar").style.display = "none";
-    const infoBlock = document.getElementById("userInfo");
-    if (infoBlock) infoBlock.style.display = "none";
-  }
-
-
-
-    document.getElementById("dropdownAvatar").src = user.photoURL || "user.png";
-    const nameElement = document.querySelector("#dropdownMenu p");
-    if (nameElement) {
-      nameElement.textContent = user.displayName || user.email;
-    
-  } else {
-    document.getElementById("authText").style.display = "block";
-    document.getElementById("profileAvatar").style.display = "none";
-  }
-   // ✅ NEW: Call backend API on user login
+    // ✅ Backend call on login
     fetch("https://classroom-ai.onrender.com/generate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: user.email,
-        name: user.displayName
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, name: user.displayName })
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => console.log("Backend says:", data.message))
     .catch(err => console.error("Backend error:", err));
-  
+  } else {
+    // Show login button, hide user info
+    if (authText) authText.style.display = "block";
+    if (profileAvatar) profileAvatar.style.display = "none";
+    if (avatarImg) avatarImg.style.display = "none";
+    if (dropdownAvatar) dropdownAvatar.style.display = "none";
+    if (infoBlock) infoBlock.style.display = "none";
+  }
 });
 
 export { app };
