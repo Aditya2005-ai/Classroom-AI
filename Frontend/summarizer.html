@@ -258,7 +258,7 @@
       outputBox.innerHTML = '<span class="text-blue-400 breathing">⏳ Generating summary...</span>';
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/summarize", {
+        const response = await fetch("https://classroom-ai.onrender.com/summarize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: input })
