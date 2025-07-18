@@ -111,7 +111,7 @@ onAuthStateChanged(auth, (user) => {
     document.getElementById("profileAvatar").style.display = "none";
   }
    // ✅ NEW: Call backend API on user login
-    fetch("https://classroom-api.onrender.com/init-user", {
+    fetch("https://classroom-ai.onrender.com/ask", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
