@@ -91,7 +91,9 @@
 
 
   <!-- ✅ Firebase SDKs -->
-  <script type="module" src="./auth.js">
+  <script type="module" src="./auth.js"></script>
+  
+  <script type="module">
 
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
   import {
@@ -112,7 +114,7 @@
   // ✅ Load folders when user is authenticated
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-    setLoginState(fasle);
+    setLoginState(false);
     return;
     }
     setLoginState(true);
