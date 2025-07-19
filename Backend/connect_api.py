@@ -6,7 +6,9 @@ import os
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+# Allow only your Netlify frontend
+CORS(app, resources={r"/*": {"origins": "https://classroom-ai-in.netlify.app"}}, supports_credentials=True)
+
 logging.basicConfig(level=logging.INFO)
 
 # Configure Gemini API key
