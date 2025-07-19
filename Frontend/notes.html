@@ -189,6 +189,12 @@
       opacity: 0.3;
       cursor: pointer;
     }
+    /* This is optional if using Tailwind only */
+    .fade-in-out {
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col px-2 py-1 transition-opacity duration-500 opacity-100">
@@ -246,12 +252,30 @@
   <div class="secret-konami" onclick="showKonamiHint()">
     Try: ↑↑↓↓←→←→BA
   </div>
+  <div id="inputWarning" class="hidden text-red-400 text-sm mt-2 transition-opacity duration-500 opacity-0">
+  Please enter something
+  </div>
+
 
   <script>
     async function generateNotes() {
       const input = document.getElementById('inputNotes').value.trim();
       const outputField = document.getElementById('outputNotes');
-      if (!input) return alert("Please enter something!");
+      
+      if (!input) {
+      const warning = document.getElementById('inputWarning');
+      warning.classList.remove('hidden');
+      warning.classList.add('opacity-100');
+      
+      setTimeout(() => {
+        warning.classList.remove('opacity-100');
+        warning.classList.add('opacity-0');
+        setTimeout(() => warning.classList.add('hidden'), 500);
+      }, 3000);
+
+      return;
+    }
+
 
       outputField.value = "🤔 Generating notes...";
 
