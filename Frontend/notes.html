@@ -195,26 +195,6 @@
       opacity: 1;
       transition: opacity 0.5s ease-in-out;
     }
-    @keyframes blinkCaretLine {
-      0%, 100% {
-        border-right-color: transparent;
-      }
-      50% {
-        border-right-color: white;
-      }
-    }
-
-    /* Default state — no blinking */
-    #inputNotes {
-      caret-color: transparent;
-      transition: border-right-color 0.2s ease;
-    }
-
-    /* On focus — blinking cursor appears */
-    #inputNotes:focus {
-      caret-color: white;
-    }
-
 
   </style>
 </head>
