@@ -98,7 +98,7 @@ onAuthStateChanged(auth, (user) => {
     if (dropdownName) dropdownName.textContent = user.displayName || user.email;
 
     // ✅ Backend call on login
-    fetch("https://classroom-ai.onrender.com/generate", {
+    fetch("https://classroom-ai.onrender.com/gemini", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: user.email, name: user.displayName })
