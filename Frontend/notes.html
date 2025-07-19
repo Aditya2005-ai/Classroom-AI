@@ -263,7 +263,7 @@ Text:
 """${input}"""`;
 
       try {
-        const res = await fetch("https://classroom-ai.onrender.com", {
+        const res = await fetch("https://classroom-ai.onrender.com/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
