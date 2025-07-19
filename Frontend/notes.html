@@ -403,6 +403,16 @@ Text:
     document.body.classList.remove("opacity-0");
     document.body.classList.add("opacity-100");
   });
+  const inputBox = document.getElementById("inputNotes");
+  let clearedOnce = false;
+
+  inputBox.addEventListener("focus", () => {
+    if (!clearedOnce) {
+      inputBox.value = "";
+      clearedOnce = true;
+    }
+  });
   </script>
 </body>
 </html>
+
