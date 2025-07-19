@@ -339,8 +339,37 @@ Text:
           setTimeout(typeChar, speed);
         }
       }
-      typeChar();
+      
+    function typeTextEffect(element, text, speed = 20) {
+    element.value = "";
+    let index = 0;
+    let cursor = true;
+
+    const blinkInterval = setInterval(() => {
+      if (index >= text.length) {
+        element.value = text + (cursor ? " |" : " ");
+      }
+      cursor = !cursor;
+    }, 500);
+
+    function typeChar() {
+      if (index < text.length) {
+        element.value = text.slice(0, index + 1);
+        element.scrollTop = element.scrollHeight;
+        index++;
+        setTimeout(typeChar, speed);
+      } else {
+        clearInterval(blinkInterval);
+        // After full typing, restart blinking
+        setInterval(() => {
+          element.value = text + (cursor ? " |" : " ");
+          cursor = !cursor;
+        }, 500);
+      }
     }
+    typeChar();
+  }
+
 
     // Konami Code Easter Egg
     let konamiCode = [];
