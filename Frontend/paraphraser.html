@@ -73,7 +73,7 @@
       outputContainer.classList.remove('hidden');
 
       try {
-        const res = await fetch("https://classroom-ai.onrender.com", {
+        const res = await fetch("https://classroom-ai.onrender.com/paragraphize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: rawText })

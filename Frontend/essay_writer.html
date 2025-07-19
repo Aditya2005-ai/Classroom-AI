@@ -240,7 +240,7 @@
       outputContainer.classList.remove("hidden");
 
       try {
-        const response = await fetch("https://classroom-ai.onrender.com", {
+        const response = await fetch("https://classroom-ai.onrender.com/essay", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ topic })

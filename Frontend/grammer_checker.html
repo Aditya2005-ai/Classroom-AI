@@ -64,7 +64,7 @@
       outputContainer.classList.remove('hidden');
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/grammar", {
+        const res = await fetch("https://classroom-ai.onrender.com/grammar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: rawText })
