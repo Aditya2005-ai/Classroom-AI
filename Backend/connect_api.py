@@ -23,7 +23,7 @@ def call_gemini(prompt, model_name='gemini-2.5-flash'):
         return str(e)
     
 # ✅ Notes Generator route (newly add this)
-@app.route('/gemini', methods=['POST'])
+@app.route('/generate', methods=['POST'])
 def notes_generator():
     data = request.json
     prompt = data.get('prompt', '').strip()
