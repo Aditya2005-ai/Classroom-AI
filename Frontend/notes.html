@@ -207,16 +207,12 @@
     /* Default state — no blinking */
     #inputNotes {
       caret-color: transparent;
-      border-right: 2px solid transparent;
       transition: border-right-color 0.2s ease;
-      font-family: monospace;
     }
 
     /* On focus — blinking cursor appears */
     #inputNotes:focus {
       caret-color: white;
-      border-right-color: white;
-      animation: blinkCaretLine 1s step-end infinite;
     }
 
 
