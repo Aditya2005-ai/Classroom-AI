@@ -195,21 +195,21 @@
       opacity: 1;
       transition: opacity 0.5s ease-in-out;
     }
-    /* Custom blinking caret animation */
-    @keyframes blinkCaret {
+    @keyframes blinkCaretLine {
       0%, 100% {
-        caret-color: transparent;
+        border-right-color: transparent;
       }
       50% {
-        caret-color: white; /* You can use neon or any bright color */
+        border-right-color: white;
       }
     }
 
-    .blinking-caret {
+    #inputNotes {
+      font-family: monospace; /* Optional but looks cleaner for typing */
       caret-color: white;
-      animation: blinkCaret 1s step-end infinite;
+      border-right: 2px solid white;
+      animation: blinkCaretLine 1s step-end infinite;
     }
-
 
   </style>
 </head>
@@ -233,7 +233,7 @@
   <div class="flex h-screen pt-16 px-6 gap-6">
     <div class="flex-1 flex flex-col">
       <h2 class="text-xl font-bold mb-4">📝 Topic / Lecture Text</h2>
-      <textarea id="inputNotes" class ="blinking-caret" placeholder=" Paste topic or lecture here..."></textarea>
+      <textarea id="inputNotes" placeholder=" Paste topic or lecture here..."></textarea>
       <button class="btn mt-4" onclick="generateNotes()">Generate Notes</button>
     </div>
     <div class="flex-1 flex flex-col">
