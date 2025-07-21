@@ -330,12 +330,7 @@ Text:
     let index = 0;
     let cursor = true;
 
-    const blinkInterval = setInterval(() => {
-      if (index >= text.length) {
-        element.value = text + (cursor ? " |" : " ");
-      }
-      cursor = !cursor;
-    }, 500);
+  
 
     function typeChar() {
       if (index < text.length) {
@@ -433,15 +428,43 @@ Text:
     document.body.classList.remove("opacity-0");
     document.body.classList.add("opacity-100");
   });
-  const inputBox = document.getElementById("inputNotes");
-  let clearedOnce = false;
+ const inputBox = document.getElementById("inputNotes");
+let originalText = "";
+let hasTyped = false;
+let cursorInterval = null;
 
-  inputBox.addEventListener("focus", () => {
-    if (!clearedOnce) {
-      inputBox.value = "";
-      clearedOnce = true;
-    }
-  });
+// On focus
+inputBox.addEventListener("focus", () => {
+  originalText = inputBox.value;
+  inputBox.value = "|";
+  hasTyped = false;
+
+  // Blinking cursor (only one instance)
+  if (cursorInterval) clearInterval(cursorInterval);
+  let show = true;
+  cursorInterval = setInterval(() => {
+    inputBox.value = show ? "|" : " ";
+    show = !show;
+  }, 500);
+});
+
+// Detect if user types
+inputBox.addEventListener("input", () => {
+  hasTyped = true;
+  if (cursorInterval) clearInterval(cursorInterval); // Stop blinking
+});
+
+// On blur (click outside)
+inputBox.addEventListener("blur", () => {
+  if (cursorInterval) clearInterval(cursorInterval);
+  
+  // If user hasn't typed anything, restore original text
+  if (!hasTyped) {
+    inputBox.value = originalText;
+  }
+  // Otherwise, keep user's typed value (unchanged)
+});
+
   </script>
 </body>
 </html>
