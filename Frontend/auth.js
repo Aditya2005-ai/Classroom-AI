@@ -26,52 +26,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ✅ Update UI on login state
-onAuthStateChanged(auth, (user) => {
-  const authText = document.getElementById("authText");
-  const avatarImg = document.getElementById("userAvatar");
-  const profileAvatar = document.getElementById("profileAvatar");
-  const dropdownAvatar = document.getElementById("dropdownAvatar");
-  const nameElement = document.getElementById("userName");
-  const emailElement = document.getElementById("userEmail");
-  const infoBlock = document.getElementById("userInfo");
-  const dropdownName = document.querySelector("#dropdownMenu p");
-
-  if (user) {
-    // Show profile UI
-    if (authText) authText.style.display = "none";
-    if (avatarImg) {
-      avatarImg.src = user.photoURL || "user.png";
-      avatarImg.style.display = "block";
-    }
-    if (profileAvatar) profileAvatar.style.display = "block";
-    if (dropdownAvatar) dropdownAvatar.src = user.photoURL || "user.png";
-
-    if (nameElement) nameElement.textContent = user.displayName || "No Name";
-    if (emailElement) emailElement.textContent = user.email || "No Email";
-    if (infoBlock) infoBlock.style.display = "block";
-    if (dropdownName) dropdownName.textContent = user.displayName || user.email;
-
-    // ✅ Backend call on login
-    fetch("https://classroom-ai.onrender.com/gemini", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email, name: user.displayName })
-    })
-    .then(res => res.json())
-    .then(data => console.log("Backend says:", data.message))
-    .catch(err => console.error("Backend error:", err));
-  } else {
-    // Show login button, hide user info
-    if (authText) authText.style.display = "block";
-    if (profileAvatar) profileAvatar.style.display = "none";
-    if (avatarImg) avatarImg.style.display = "none";
-    if (dropdownAvatar) dropdownAvatar.style.display = "none";
-    if (infoBlock) infoBlock.style.display = "none";
-  }
-});
-
-
 // ✅ Google Sign-In Function
 window.googleSignIn = function () {
   const provider = new GoogleAuthProvider();
@@ -117,5 +71,49 @@ window.logoutUser = function () {
 };
 
 
+// ✅ Update UI on login state
+onAuthStateChanged(auth, (user) => {
+  const authText = document.getElementById("authText");
+  const avatarImg = document.getElementById("userAvatar");
+  const profileAvatar = document.getElementById("profileAvatar");
+  const dropdownAvatar = document.getElementById("dropdownAvatar");
+  const nameElement = document.getElementById("userName");
+  const emailElement = document.getElementById("userEmail");
+  const infoBlock = document.getElementById("userInfo");
+  const dropdownName = document.querySelector("#dropdownMenu p");
+
+  if (user) {
+    // Show profile UI
+    if (authText) authText.style.display = "none";
+    if (avatarImg) {
+      avatarImg.src = user.photoURL || "user.png";
+      avatarImg.style.display = "block";
+    }
+    if (profileAvatar) profileAvatar.style.display = "block";
+    if (dropdownAvatar) dropdownAvatar.src = user.photoURL || "user.png";
+
+    if (nameElement) nameElement.textContent = user.displayName || "No Name";
+    if (emailElement) emailElement.textContent = user.email || "No Email";
+    if (infoBlock) infoBlock.style.display = "block";
+    if (dropdownName) dropdownName.textContent = user.displayName || user.email;
+
+    // ✅ Backend call on login
+    fetch("https://classroom-ai.onrender.com/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, name: user.displayName })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Backend says:", data.message))
+    .catch(err => console.error("Backend error:", err));
+  } else {
+    // Show login button, hide user info
+    if (authText) authText.style.display = "block";
+    if (profileAvatar) profileAvatar.style.display = "none";
+    if (avatarImg) avatarImg.style.display = "none";
+    if (dropdownAvatar) dropdownAvatar.style.display = "none";
+    if (infoBlock) infoBlock.style.display = "none";
+  }
+});
 
 export { app };
